@@ -4,4 +4,4 @@
 
 由于语言运用能力仍然不够成熟，所以看上去可能会像机翻的一样。
 
-eat *eat* **eat** ***eat*** ~eat~ -eat- _eat_ =eat= 
+eat *eat* **eat** ***eat*** ~eat~ 
