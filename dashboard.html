@@ -3,175 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wedm_ 人生效率仪表盘</title>
-    <<style>
+    <title>Wedm_ Efficiency Dashboard</title>
+    <style>
         :root {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
+            --bg-color: #000000; /* 纯黑背景，更极致 */
+            --card-bg: #111111;
             --text-main: #ffffff;
-            --text-dim: #666666; /* 低对比度灰色 */
-            --border-radius: 12px;
-            --accent-green: #00e676; /* 仅用于 hover 边框 */
+            --text-dim: #666666; 
+            --accent-color: #ffffff; 
+            --border-color: #333333;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             padding: 20px;
             margin: 0;
-            max-width: 800px;
+            max-width: 600px; /* 手机上最佳阅读宽度 */
             margin-left: auto;
             margin-right: auto;
         }
 
-        h1 {
-            font-size: 1.5rem;
-            margin-bottom: 25px;
+        /* ====================
+           顶部总分区域
+           ==================== */
+        .total-container {
             text-align: center;
-            opacity: 0.9;
-            letter-spacing: 1px;
-            color: #fff;
+            margin-bottom: 40px;
+            padding-top: 20px;
         }
 
-        /* A大类容器 */
-        .major-category {
-            background-color: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 20px;
-            margin-bottom: 30px;
-            border: 1px solid #333;
-        }
-
-        .category-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #2a2a2a;
-        }
-
-        .category-title {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: #eee;
+        .total-label {
+            font-size: 0.8rem;
+            color: var(--text-dim);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
         }
 
-        /* 垂直列表布局 */
-        .factors-grid {
+        .total-score {
+            font-size: 4rem; /* 超大数字 */
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1;
+            letter-spacing: -2px; /* 紧凑感 */
+        }
+
+        /* ====================
+           大板块 (Compact Mode)
+           ==================== */
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: baseline;
+            margin-bottom: 10px;
+            padding-left: 5px; /* 对齐微调 */
+            border-bottom: 1px solid #222; /* 极细分割线 */
+            padding-bottom: 5px;
+        }
+
+        .section-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #888; /* 标题反而弱化，突出内容 */
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ====================
+           卡片列表
+           ==================== */
+        .card-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 1px; /* 极致紧凑，只有1px间距 */
+            background-color: var(--border-color); /* 利用间距形成分割线 */
+            border-radius: 12px;
+            overflow: hidden; /* 圆角裁切 */
+            border: 1px solid var(--border-color);
         }
 
-        /* 卡片容器 */
         .factor-card {
-            background-color: #252525;
-            border-radius: 8px;
-            padding: 18px 20px; /* 稍微增加高度 */
+            background-color: var(--card-bg);
+            padding: 18px 20px;
             display: flex;
             flex-direction: row;
             align-items: center; 
-            justify-content: space-between; /* 左右分开：左标题，右公式+数值 */
+            justify-content: space-between;
             position: relative;
-            border: 1px solid #333;
-            transition: all 0.2s ease;
-        }
-        
-        .factor-card:hover {
-            border-color: var(--accent-green);
-            background-color: #2a2a2a;
+            /* 移除单卡片边框，改用容器统一管理 */
         }
 
-        /* 左侧：标题 */
+        /* 左侧：标题 (高亮，大，白) */
         .factor-name {
-            font-size: 1.3rem; /* 字大 */
-            color: #ffffff;    /* 高对比度 */
-            font-weight: 800;  /* 高字重 */
-            letter-spacing: 0.5px;
+            font-size: 1.1rem; 
+            color: #ffffff;    
+            font-weight: 600;  
         }
 
-        /* 右侧容器：公式 + 数值 */
+        /* 右侧组合 */
         .factor-right-group {
             display: flex;
-            align-items: baseline; /* 基线对齐，看起来更舒服 */
-            gap: 12px; /* 拉开公式和数值的距离 */
+            align-items: center; /* 垂直居中 */
+            gap: 10px; 
             text-align: right;
         }
 
-        /* 公式：低对比度，放在前面 */
+        /* 公式 (低亮，小，灰) */
         .factor-formula {
-            font-size: 0.75rem; /* 字小 */
-            color: var(--text-dim); /* 低对比度 */
-            font-family: "Courier New", monospace;
+            font-size: 0.7rem; 
+            color: var(--text-dim); 
+            font-family: "SF Mono", "Menlo", "Courier New", monospace;
+            opacity: 0.8;
         }
 
-        /* 数值：高对比度，放在后面 */
+        /* 结果数值 (高亮，中，白) */
         .factor-value {
-            font-size: 1.0rem; /* 字介于标题和公式之间 */
-            font-weight: 700;  /* 高字重 */
-            color: #ffffff;    /* 白色 */
+            font-size: 1.1rem; 
+            font-weight: 600;  
+            color: #ffffff;    
+            min-width: 40px; /* 保证对齐 */
+            text-align: right;
         }
-        
-        /* 这里的 x 去掉了 */
 
-        /* 添加按钮 */
-        .add-btn {
-            border: 2px dashed #333;
-            justify-content: center;
-            color: #555;
-            font-size: 1.5rem;
-            min-height: 50px;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
 
-    <h1>效率与杠杆可视化</h1>
+    <div class="total-container">
+        <div class="total-label">Total Efficiency</div>
+        <div class="total-score">3.00</div>
+    </div>
 
-    <div class="major-category">
-        <div class="category-header">
-            <span class="category-title">A. 工作 (Value Creation)</span>
+
+    <div class="section">
+        <div class="section-header">
+            <span class="section-title">A. Work</span>
         </div>
         
-        <div class="factors-grid">
-            
+        <div class="card-list">
             <div class="factor-card">
-                <div class="factor-name">[小类名称]</div>
-                <div class="factor-value">1</div> <div class="factor-formula">Input * Output</div> </div>
+                <div class="factor-name">Code Gen</div>
+                <div class="factor-right-group">
+                    <div class="factor-formula">Input * AI</div>
+                    <div class="factor-value">10</div>
+                </div>
+            </div>
 
-            <div class="factor-card add-btn">+</div>
-
+            <div class="factor-card">
+                <div class="factor-name">Writing</div>
+                <div class="factor-right-group">
+                    <div class="factor-formula">Word * GPT</div>
+                    <div class="factor-value">5</div>
+                </div>
+            </div>
         </div>
     </div>
 
 
-    <div class="major-category">
-        <div class="category-header">
-            <span class="category-title">B. 个人成长 (Growth)</span>
+    <div class="section">
+        <div class="section-header">
+            <span class="section-title">B. Growth</span>
         </div>
-        <div class="factors-grid">
-            <div class="factor-card add-btn">+</div>
-        </div>
-    </div>
-
-
-    <div class="major-category">
-        <div class="category-header">
-            <span class="category-title">C. 财富创造 (Wealth)</span>
-        </div>
-        <div class="factors-grid">
-            <div class="factor-card add-btn">+</div>
+        <div class="card-list">
+            <div class="factor-card">
+                <div class="factor-name">Reading</div>
+                <div class="factor-right-group">
+                    <div class="factor-formula">Speed * 3</div>
+                    <div class="factor-value">3</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="note">
-        使用方法：编辑 HTML 文件，复制模板代码，填入你的“万倍因子”。
-        <br>低对比度文字 = 你的逻辑 (公式) | 高对比度文字 = 你的现状 (效率)
+
+    <div class="section">
+        <div class="section-header">
+            <span class="section-title">C. Wealth</span>
+        </div>
+        <div class="card-list">
+             <div class="factor-card">
+                <div class="factor-name">Investment</div>
+                <div class="factor-right-group">
+                    <div class="factor-formula">Passive</div>
+                    <div class="factor-value">1.05</div>
+                </div>
+            </div>
+        </div>
     </div>
 
 </body>
