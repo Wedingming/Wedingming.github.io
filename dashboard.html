@@ -39,7 +39,117 @@
             border-radius: var(--border-radius);
             padding: 20px;
             margin-bottom: 30px;
-            border: 1px solid #
+            border: 1px solid #333;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #2a2a2a;
+        }
+
+        .category-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #eee;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* 列表布局 */
+        .factors-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* 小类卡片 */
+        .factor-card {
+            background-color: #252525;
+            border-radius: 8px;
+            padding: 15px 20px;
+            display: flex;
+            flex-direction: row; /* 横向排列 */
+            align-items: center; /* 垂直居中 */
+            justify-content: space-between; /* 左右两端对齐 */
+            min-height: 50px;
+            border: 1px solid #333;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        
+        .factor-card:hover {
+            border-color: #fff; /* 悬停变白 */
+            background-color: #2a2a2a;
+        }
+
+        /* 左侧容器：低对比度文字（公式/逻辑） */
+        .factor-content-left {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        /* 公式 - 放在主要位置，但低对比度 */
+        .factor-formula {
+            font-size: 0.85rem;
+            color: var(--dim-color); /* 低对比度 */
+            font-family: "Courier New", monospace;
+            order: 2; /* 如果你想微调上下顺序，改这个 */
+        }
+        
+        /* 名字 - 稍微亮一点，作为辅助 */
+        .factor-name {
+            font-size: 0.9rem;
+            color: #999; 
+            font-weight: 500;
+            order: 1;
+        }
+
+        /* 右侧容器：高对比度文字（数值） */
+        .factor-value {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: var(--accent-color); /* 纯白 #ffffff */
+            margin-left: 20px;
+            text-align: right;
+            text-shadow: 0 0 10px rgba(255,255,255,0.1); /* 微微发光 */
+        }
+        
+        .factor-value::after {
+            content: "x";
+            font-size: 0.8rem;
+            opacity: 0.5;
+            margin-left: 2px;
+            color: #888;
+            font-weight: normal;
+        }
+
+        /* 添加按钮 */
+        .add-btn {
+            border: 2px dashed #333;
+            justify-content: center;
+            color: #555;
+            font-size: 1.5rem;
+            cursor: pointer;
+            background-color: transparent;
+        }
+        .add-btn:hover {
+            color: #fff;
+            border-color: #fff;
+        }
+
+        .note {
+            font-size: 0.7rem;
+            color: #444;
+            margin-top: 40px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
 
