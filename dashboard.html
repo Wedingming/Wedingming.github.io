@@ -4,19 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wedm_ 人生效率仪表盘</title>
-    <style>
+    <<style>
         :root {
             --bg-color: #121212;
             --card-bg: #1e1e1e;
-            --accent-color: #ffffff; /* 改为纯白，高对比度 */
-            --dim-color: #666666;    /* 低对比度灰色 */
+            --text-main: #ffffff;
+            --text-dim: #666666; /* 低对比度灰色 */
             --border-radius: 12px;
+            --accent-green: #00e676; /* 仅用于 hover 边框 */
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
-            color: #ffffff;
+            color: var(--text-main);
             padding: 20px;
             margin: 0;
             max-width: 800px;
@@ -30,24 +31,23 @@
             text-align: center;
             opacity: 0.9;
             letter-spacing: 1px;
-            color: #ffffff;
+            color: #fff;
         }
 
-        /* 大类容器 */
+        /* A大类容器 */
         .major-category {
             background-color: var(--card-bg);
             border-radius: var(--border-radius);
             padding: 20px;
             margin-bottom: 30px;
             border: 1px solid #333;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
 
         .category-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             padding-bottom: 10px;
             border-bottom: 2px solid #2a2a2a;
         }
@@ -60,74 +60,63 @@
             letter-spacing: 0.5px;
         }
 
-        /* 列表布局 */
+        /* 垂直列表布局 */
         .factors-grid {
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
 
-        /* 小类卡片 */
+        /* 卡片容器 */
         .factor-card {
             background-color: #252525;
             border-radius: 8px;
-            padding: 15px 20px;
+            padding: 18px 20px; /* 稍微增加高度 */
             display: flex;
-            flex-direction: row; /* 横向排列 */
-            align-items: center; /* 垂直居中 */
-            justify-content: space-between; /* 左右两端对齐 */
-            min-height: 50px;
+            flex-direction: row;
+            align-items: center; 
+            justify-content: space-between; /* 左右分开：左标题，右公式+数值 */
+            position: relative;
             border: 1px solid #333;
-            transition: transform 0.2s, border-color 0.2s;
+            transition: all 0.2s ease;
         }
         
         .factor-card:hover {
-            border-color: #fff; /* 悬停变白 */
+            border-color: var(--accent-green);
             background-color: #2a2a2a;
         }
 
-        /* 左侧容器：低对比度文字（公式/逻辑） */
-        .factor-content-left {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 4px;
-        }
-
-        /* 公式 - 放在主要位置，但低对比度 */
-        .factor-formula {
-            font-size: 0.85rem;
-            color: var(--dim-color); /* 低对比度 */
-            font-family: "Courier New", monospace;
-            order: 2; /* 如果你想微调上下顺序，改这个 */
-        }
-        
-        /* 名字 - 稍微亮一点，作为辅助 */
+        /* 左侧：标题 */
         .factor-name {
-            font-size: 0.9rem;
-            color: #999; 
-            font-weight: 500;
-            order: 1;
+            font-size: 1.3rem; /* 字大 */
+            color: #ffffff;    /* 高对比度 */
+            font-weight: 800;  /* 高字重 */
+            letter-spacing: 0.5px;
         }
 
-        /* 右侧容器：高对比度文字（数值） */
-        .factor-value {
-            font-size: 1.6rem;
-            font-weight: bold;
-            color: var(--accent-color); /* 纯白 #ffffff */
-            margin-left: 20px;
+        /* 右侧容器：公式 + 数值 */
+        .factor-right-group {
+            display: flex;
+            align-items: baseline; /* 基线对齐，看起来更舒服 */
+            gap: 12px; /* 拉开公式和数值的距离 */
             text-align: right;
-            text-shadow: 0 0 10px rgba(255,255,255,0.1); /* 微微发光 */
+        }
+
+        /* 公式：低对比度，放在前面 */
+        .factor-formula {
+            font-size: 0.75rem; /* 字小 */
+            color: var(--text-dim); /* 低对比度 */
+            font-family: "Courier New", monospace;
+        }
+
+        /* 数值：高对比度，放在后面 */
+        .factor-value {
+            font-size: 1.0rem; /* 字介于标题和公式之间 */
+            font-weight: 700;  /* 高字重 */
+            color: #ffffff;    /* 白色 */
         }
         
-        .factor-value::after {
-            content: "x";
-            font-size: 0.8rem;
-            opacity: 0.5;
-            margin-left: 2px;
-            color: #888;
-            font-weight: normal;
-        }
+        /* 这里的 x 去掉了 */
 
         /* 添加按钮 */
         .add-btn {
@@ -135,19 +124,8 @@
             justify-content: center;
             color: #555;
             font-size: 1.5rem;
+            min-height: 50px;
             cursor: pointer;
-            background-color: transparent;
-        }
-        .add-btn:hover {
-            color: #fff;
-            border-color: #fff;
-        }
-
-        .note {
-            font-size: 0.7rem;
-            color: #444;
-            margin-top: 40px;
-            text-align: center;
         }
     </style>
 </head>
