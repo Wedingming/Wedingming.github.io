@@ -5,36 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wedm_ Efficiency Dashboard</title>
     <style>
-        /* =========================================
-           CSS 变量定义 (默认深色模式 Dark Mode)
-           ========================================= */
+        /* ====================
+           CSS 样式配置
+           ==================== */
         :root {
-            --bg-color: #000000;       /* 纯黑背景 */
-            --card-bg: #111111;        /* 卡片深灰 */
-            --text-main: #ffffff;      /* 主文字纯白 */
-            --text-dim: #666666;       /* 次要文字深灰 */
-            --border-color: #333333;   /* 分割线 */
-            --section-title: #888888;  /* 板块标题 */
+            --bg-color: #000000;
+            --card-bg: #111111;
+            --text-main: #ffffff;
+            --text-dim: #666666;
+            --border-color: #333333;
+            --section-title: #888888;
         }
 
-        /* =========================================
-           浅色模式适配 (Light Mode)
-           当系统设置为浅色时，自动覆盖上面的变量
-           ========================================= */
         @media (prefers-color-scheme: light) {
             :root {
-                --bg-color: #f2f2f7;      /* 苹果灰背景 */
-                --card-bg: #ffffff;       /* 卡片纯白 */
-                --text-main: #000000;     /* 主文字纯黑 */
-                --text-dim: #8e8e93;      /* 次要文字浅灰 */
-                --border-color: #d1d1d6;  /* 分割线 */
-                --section-title: #6e6e73; /* 板块标题 */
+                --bg-color: #f2f2f7;
+                --card-bg: #ffffff;
+                --text-main: #000000;
+                --text-dim: #8e8e93;
+                --border-color: #d1d1d6;
+                --section-title: #6e6e73;
             }
         }
 
-        /* =========================================
-           全局样式
-           ========================================= */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-color);
@@ -44,7 +37,7 @@
             max-width: 600px;
             margin-left: auto;
             margin-right: auto;
-            transition: background-color 0.3s, color 0.3s; /* 丝滑切换动画 */
+            transition: background-color 0.3s, color 0.3s;
         }
 
         /* 顶部总分 */
@@ -56,32 +49,32 @@
 
         .total-label {
             font-size: 0.8rem;
-            color: var(--section-title); /* 使用变量 */
+            color: var(--section-title);
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             font-weight: 600;
         }
 
         .total-score {
-            font-size: 4rem;
+            font-size: 4.5rem;
             font-weight: 700;
-            color: var(--text-main); /* 自动变黑/白 */
+            color: var(--text-main);
             line-height: 1;
-            letter-spacing: -2px;
+            letter-spacing: -3px;
         }
 
         /* 板块 */
         .section {
-            margin-bottom: 30px;
+            margin-bottom: 35px;
         }
 
         .section-header {
             display: flex;
+            justify-content: space-between;
             align-items: baseline;
             margin-bottom: 8px;
-            padding-left: 10px;
-            /* 浅色模式下不需要下划线，保持干净 */
+            padding: 0 10px;
         }
 
         .section-title {
@@ -92,125 +85,151 @@
             letter-spacing: 1px;
         }
 
+        .section-total {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main); /* 强调板块总分 */
+            opacity: 0.8;
+        }
+
         /* 列表容器 */
         .card-list {
             display: flex;
             flex-direction: column;
-            gap: 1px; 
-            background-color: var(--border-color); /* 边框颜色自动变 */
+            gap: 1px;
+            background-color: var(--border-color);
             border-radius: 12px;
             overflow: hidden;
             border: 1px solid var(--border-color);
         }
 
         .factor-card {
-            background-color: var(--card-bg); /* 背景自动变 */
-            padding: 16px 20px;
+            background-color: var(--card-bg);
+            padding: 18px 20px;
             display: flex;
             flex-direction: row;
-            align-items: center; 
+            align-items: center;
             justify-content: space-between;
-            position: relative;
         }
 
-        /* 左侧：标题 */
         .factor-name {
-            font-size: 1.1rem; 
-            color: var(--text-main); /* 自动变黑/白 */
-            font-weight: 600;  
+            font-size: 1.1rem;
+            color: var(--text-main);
+            font-weight: 600;
         }
 
-        /* 右侧组合 */
         .factor-right-group {
             display: flex;
             align-items: center;
-            gap: 12px; 
+            gap: 12px;
             text-align: right;
         }
 
-        /* 公式 */
         .factor-formula {
-            font-size: 0.75rem; 
-            color: var(--text-dim); /* 自动变灰 */
+            font-size: 0.75rem;
+            color: var(--text-dim);
             font-family: "SF Mono", "Menlo", "Courier New", monospace;
             opacity: 0.9;
             font-weight: 500;
         }
 
-        /* 结果数值 */
         .factor-value {
-            font-size: 1.1rem; 
-            font-weight: 600;  
-            color: var(--text-main); /* 自动变黑/白 */
-            min-width: 40px; 
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            min-width: 40px;
             text-align: right;
         }
-
     </style>
 </head>
 <body>
 
     <div class="total-container">
         <div class="total-label">Total Efficiency</div>
-        <div class="total-score">3.00</div>
+        <div id="grand-total" class="total-score">0.00</div>
     </div>
 
+    <div id="dashboard-content"></div>
 
-    <div class="section">
-        <div class="section-header">
-            <span class="section-title">A. Work</span>
-        </div>
+
+    <script>
+        // 在这里填入你的因子
+        const data = {
+            // A 类板块
+            work: {
+                title: "A. Work (Value)",
+                items: [
+                    // { name: "显示名称", formula: "公式说明", value: 具体数值 }
+                    { name: "Code Gen", formula: "Input * AI", value: 10 },
+                    { name: "Writing", formula: "Word * GPT", value: 5 },
+                    // 想加新行？复制上一行改改就行
+                ]
+            },
+            
+            // B 类板块
+            growth: {
+                title: "B. Growth (Kernel)",
+                items: [
+                    { name: "Reading", formula: "Speed * 3", value: 3 },
+                    { name: "Skill Acq", formula: "Learn / Time", value: 2 },
+                ]
+            },
+
+            // C 类板块
+            wealth: {
+                title: "C. Wealth (Asset)",
+                items: [
+                    { name: "Investment", formula: "Passive", value: 1.05 },
+                ]
+            }
+        };
+
+        // ========================================================
+        // 下面是自动渲染逻辑 (不需要动)
+        // ========================================================
         
-        <div class="card-list">
-            <div class="factor-card">
-                <div class="factor-name">Code Gen</div>
-                <div class="factor-right-group">
-                    <div class="factor-formula">Input * AI</div>
-                    <div class="factor-value">10</div>
-                </div>
-            </div>
+        function renderDashboard() {
+            const container = document.getElementById('dashboard-content');
+            let grandTotal = 0;
 
-            <div class="factor-card">
-                <div class="factor-name">Writing</div>
-                <div class="factor-right-group">
-                    <div class="factor-formula">Word * GPT</div>
-                    <div class="factor-value">5</div>
-                </div>
-            </div>
-        </div>
-    </div>
+            // 遍历三个板块
+            for (const key in data) {
+                const section = data[key];
+                
+                // 1. 计算该板块总分
+                let sectionTotal = 0;
+                section.items.forEach(item => sectionTotal += item.value);
+                grandTotal += sectionTotal;
 
+                // 2. 生成 HTML
+                const sectionHTML = `
+                    <div class="section">
+                        <div class="section-header">
+                            <span class="section-title">${section.title}</span>
+                            <span class="section-total">Sum: ${sectionTotal.toFixed(2)}</span>
+                        </div>
+                        <div class="card-list">
+                            ${section.items.map(item => `
+                                <div class="factor-card">
+                                    <div class="factor-name">${item.name}</div>
+                                    <div class="factor-right-group">
+                                        <div class="factor-formula">${item.formula}</div>
+                                        <div class="factor-value">${item.value}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += sectionHTML;
+            }
 
-    <div class="section">
-        <div class="section-header">
-            <span class="section-title">B. Growth</span>
-        </div>
-        <div class="card-list">
-            <div class="factor-card">
-                <div class="factor-name">Reading</div>
-                <div class="factor-right-group">
-                    <div class="factor-formula">Speed * 3</div>
-                    <div class="factor-value">3</div>
-                </div>
-            </div>
-        </div>
-    </div>
+            // 3. 更新顶部大总分
+            document.getElementById('grand-total').innerText = grandTotal.toFixed(2);
+        }
 
-
-    <div class="section">
-        <div class="section-header">
-            <span class="section-title">C. Wealth</span>
-        </div>
-        <div class="card-list">
-             <div class="factor-card">
-                <div class="factor-name">Investment</div>
-                <div class="factor-right-group">
-                    <div class="factor-formula">Passive</div>
-                    <div class="factor-value">1.05</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
+        // 运行
+        renderDashboard();
+    </script>
 </body>
 </html>
