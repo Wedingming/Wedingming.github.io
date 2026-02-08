@@ -155,31 +155,28 @@
     <script>
         // 在这里填入你的因子
         const data = {
-            // A 类板块
+            // A 类板块：工作 (目前为 0)
             work: {
-                title: "A. Work (Value)",
+                title: "A. WORK (Value)",
                 items: [
-                    // { name: "显示名称", formula: "公式说明", value: 具体数值 }
-                    { name: "Code Gen", formula: "Input * AI", value: 10 },
-                    { name: "Writing", formula: "Word * GPT", value: 5 },
-                    // 想加新行？复制上一行改改就行
+                    { name: "Current State", formula: "No Output", value: 0 }
                 ]
             },
             
-            // B 类板块
+            // B 类板块：个人成长 (乘法逻辑在此体现)
             growth: {
-                title: "B. Growth (Kernel)",
+                title: "B. GROWTH (Kernel)",
                 items: [
-                    { name: "Reading", formula: "Speed * 3", value: 3 },
-                    { name: "Skill Acq", formula: "Learn / Time", value: 2 },
+                    // 你的逻辑：阅读速度(1) * 理解速度(1) = 1
+                    { name: "Cognitive Base", formula: "Read(1) * Undst(1)", value: 1 }
                 ]
             },
 
-            // C 类板块
+            // C 类板块：财富创造 (基准为 1)
             wealth: {
-                title: "C. Wealth (Asset)",
+                title: "C. WEALTH (Asset)",
                 items: [
-                    { name: "Investment", formula: "Passive", value: 1.05 },
+                    { name: "Baseline", formula: "Initial", value: 1 }
                 ]
             }
         };
