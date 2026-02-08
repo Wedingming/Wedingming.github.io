@@ -10,7 +10,7 @@
             --card-bg: #1e1e1e;
             --accent-color: #00e676; /* 高亮绿色 */
             --text-main: #ffffff;
-            --text-dim: #555555; /* 低对比度灰色 */
+            --text-dim: #666666; /* 低对比度灰色 */
             --border-radius: 12px;
         }
 
@@ -20,113 +20,135 @@
             color: var(--text-main);
             padding: 20px;
             margin: 0;
+            max-width: 800px; /* 限制最大宽度，防止在大屏上太宽 */
+            margin-left: auto;
+            margin-right: auto;
         }
 
         h1 {
             font-size: 1.5rem;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             text-align: center;
-            opacity: 0.8;
+            opacity: 0.9;
+            letter-spacing: 1px;
         }
 
         /* A大类容器 */
         .major-category {
             background-color: var(--card-bg);
             border-radius: var(--border-radius);
-            padding: 20px;
+            padding: 20px; /* 增加内边距 */
             margin-bottom: 30px;
             border: 1px solid #333;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5); /* 加深阴影 */
         }
 
         .category-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 1px solid #333;
+            border-bottom: 2px solid #2a2a2a; /* 加粗分割线 */
         }
 
         .category-title {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: bold;
-            color: #ddd;
+            color: #eee;
+            text-transform: uppercase; /* 大写更有质感 */
+            letter-spacing: 0.5px;
         }
 
-        /* 小类网格布局 */
+        /* 列表布局核心修改 */
         .factors-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 15px;
+            display: flex;       /* 改为 Flex */
+            flex-direction: column; /* 垂直排列 */
+            gap: 12px;          /* 卡片间距 */
         }
 
-        /* B小类卡片 */
+        /* B小类卡片 - 横向条目版 */
         .factor-card {
             background-color: #252525;
             border-radius: 8px;
-            padding: 15px;
+            padding: 15px 20px;
             display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 100px;
+            flex-direction: row; /* 横向排列 */
+            align-items: center; /* 垂直居中 */
+            justify-content: space-between; /* 左右撑开 */
+            height: auto; /* 高度自适应 */
+            min-height: 60px;
             position: relative;
-            border: 1px dashed #444; /* 虚线框表示待填充感 */
-            transition: all 0.2s ease;
+            border: 1px solid #333;
+            transition: transform 0.2s, border-color 0.2s;
         }
         
         .factor-card:hover {
             border-color: var(--accent-color);
+            transform: translateX(5px); /* 悬停时轻微右移 */
             background-color: #2a2a2a;
+        }
+
+        /* 左侧容器：名字和公式 */
+        .factor-content-left {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
         /* 名字 */
         .factor-name {
-            font-size: 0.9rem;
-            color: #aaa;
+            font-size: 1rem;
+            color: #ddd;
             font-weight: 500;
-        }
-
-        /* 高对比度：效率数值 */
-        .factor-value {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: var(--accent-color);
-            align-self: flex-end; /* 右对齐 */
-        }
-        
-        .factor-value::after {
-            content: "x"; /* 自动加上倍数单位 */
-            font-size: 0.8rem;
-            opacity: 0.7;
-            margin-left: 2px;
         }
 
         /* 低对比度：计算公式 */
         .factor-formula {
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             color: var(--text-dim);
             font-family: "Courier New", monospace;
-            margin-top: auto; /* 推到底部 */
         }
 
-        /* 添加按钮样式（示意用） */
+        /* 右侧：高对比度效率数值 */
+        .factor-value {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-left: 15px; /* 防止紧贴 */
+        }
+        
+        .factor-value::after {
+            content: "x";
+            font-size: 0.8rem;
+            opacity: 0.6;
+            margin-left: 2px;
+            color: #aaa;
+        }
+
+        /* 添加按钮样式 */
         .add-btn {
             border: 2px dashed #333;
-            display: flex;
-            align-items: center;
             justify-content: center;
-            color: #444;
-            font-size: 2rem;
+            color: #555;
+            font-size: 1.5rem;
             cursor: pointer;
+            background-color: transparent;
+            min-height: 50px;
+        }
+        .add-btn:hover {
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+            background-color: rgba(0, 230, 118, 0.05);
         }
 
-        /* 说明文字 */
         .note {
             font-size: 0.8rem;
-            color: #666;
+            color: #444;
             margin-top: 50px;
             text-align: center;
+            border-top: 1px solid #222;
+            padding-top: 20px;
         }
     </style>
 </head>
