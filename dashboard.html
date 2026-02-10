@@ -14,7 +14,7 @@
             --text-main: #ffffff;
             --text-dim: #666666;
             --border-color: #333333;
-            --section-title: #888888;
+            --section-title: #ffffff; /* 标题改亮白 */
         }
 
         @media (prefers-color-scheme: light) {
@@ -24,7 +24,7 @@
                 --text-main: #000000;
                 --text-dim: #8e8e93;
                 --border-color: #d1d1d6;
-                --section-title: #6e6e73;
+                --section-title: #000000;
             }
         }
 
@@ -49,7 +49,7 @@
 
         .total-label {
             font-size: 0.8rem;
-            color: var(--section-title);
+            color: var(--text-dim);
             text-transform: uppercase;
             letter-spacing: 2px;
             margin-bottom: 8px;
@@ -66,30 +66,47 @@
 
         /* 板块 */
         .section {
-            margin-bottom: 35px;
+            margin-bottom: 40px;
         }
 
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: baseline;
-            margin-bottom: 8px;
-            padding: 0 10px;
+            margin-bottom: 15px; /* 增加间距 */
+            padding: 0 5px;
+            border-bottom: 2px solid var(--border-color); /*以此分割*/
+            padding-bottom: 8px;
         }
 
+        /* 【修改点】大标题变大、变亮 */
         .section-title {
-            font-size: 0.85rem;
-            font-weight: 600;
+            font-size: 1.5rem; /* 从0.85rem改大 */
+            font-weight: 800;  /* 特粗 */
             color: var(--section-title);
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: -0.5px;
         }
 
         .section-total {
-            font-size: 0.85rem;
+            font-size: 1.2rem; /* 总分也跟着变大 */
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* 子版块标题 */
+        .subsection-header {
+            display: flex; 
+            justify-content: space-between; 
+            margin-bottom: 8px; 
+            padding: 0 5px;
+            margin-top: 20px;
+        }
+        
+        .subsection-title {
+            font-size: 0.9rem; 
+            color: var(--text-dim); 
             font-weight: 600;
-            color: var(--text-main); /* 强调板块总分 */
-            opacity: 0.8;
+            text-transform: uppercase;
         }
 
         /* 列表容器 */
@@ -105,7 +122,7 @@
 
         .factor-card {
             background-color: var(--card-bg);
-            padding: 18px 20px;
+            padding: 16px 20px;
             display: flex;
             flex-direction: row;
             align-items: center;
@@ -115,7 +132,7 @@
         .factor-name {
             font-size: 1.1rem;
             color: var(--text-main);
-            font-weight: 600;
+            font-weight: 500;
         }
 
         .factor-right-group {
@@ -129,15 +146,15 @@
             font-size: 0.75rem;
             color: var(--text-dim);
             font-family: "SF Mono", "Menlo", "Courier New", monospace;
-            opacity: 0.9;
-            font-weight: 500;
+            opacity: 0.8;
+            /* 公式如果为空，这里就不会占位 */
         }
 
         .factor-value {
             font-size: 1.1rem;
             font-weight: 600;
             color: var(--text-main);
-            min-width: 40px;
+            min-width: 30px;
             text-align: right;
         }
     </style>
@@ -155,97 +172,94 @@
     <script>
         // ========================================================
         // 【数据配置区】
-        // 结构支持：
-        // 1. flat (扁平模式): items: [...]
-        // 2. nested (嵌套模式): subSections: [...]
+        // 公式(formula)已留空，你可以随时填入自己的算法备注
         // ========================================================
         const data = {
-            // A. 工作 (扁平结构，加法)
+            // A. 工作
             work: {
-                title: "A. 工作 (价值产出)",
+                title: "A. 工作",
                 method: "sum", 
                 items: [
-                    { name: "当前产出", formula: "暂无", value: 0 }
+                    { name: "当前产出", formula: "", value: 0 }
                 ]
             },
             
-            // B. 个人成长 (嵌套结构，乘法)
+            // B. 个人成长
             growth: {
-                title: "B. 个人成长 (内核复利)",
+                title: "B. 个人成长",
                 method: "multiply", 
-                // 这里使用 subSections 来分组
                 subSections: [
                     {
                         title: "1. 阅读体系",
                         items: [
-                            { name: "阅读速度", formula: "字数/分", value: 1 },
-                            { name: "理解速度", formula: "转化率", value: 1 },
-                            { name: "每日时长", formula: "投入时间", value: 1 },
-                            { name: "输出时间比", formula: "输出/输入", value: 1 },
-                            { name: "书籍筛选", formula: "信噪比", value: 1 }
+                            { name: "阅读速度", formula: "", value: 1 },
+                            { name: "理解速度", formula: "", value: 1 },
+                            { name: "每日时长", formula: "", value: 1 },
+                            { name: "输出时间比", formula: "", value: 1 },
+                            { name: "书籍筛选", formula: "", value: 1 }
                         ]
                     },
                     {
                         title: "2. 价值体系",
                         items: [
-                            { name: "自我探索", formula: "成果清晰度", value: 1 },
-                            { name: "价值观迭代", formula: "明确程度", value: 1 },
-                            { name: "目标分解", formula: "颗粒度", value: 1 },
-                            { name: "选择时机", formula: "调用频率", value: 1 },
-                            { name: "以理服己", formula: "逻辑自洽", value: 1 },
-                            { name: "绝对执行", formula: "选择后行动", value: 1 },
-                            { name: "周期复盘", formula: "纠偏机制", value: 1 },
-                            { name: "倒推逻辑", formula: "由果推因", value: 1 },
-                            { name: "积累效应", formula: "复利堆叠", value: 1 },
-                            { name: "长期执行", formula: "耐力", value: 1 }
+                            { name: "自我探索", formula: "", value: 1 },
+                            { name: "价值观迭代", formula: "", value: 1 },
+                            { name: "目标分解", formula: "", value: 1 },
+                            { name: "选择时机", formula: "", value: 1 },
+                            { name: "以理服己", formula: "", value: 1 },
+                            { name: "绝对执行", formula: "", value: 1 },
+                            { name: "周期复盘", formula: "", value: 1 },
+                            { name: "倒推逻辑", formula: "", value: 1 },
+                            { name: "积累效应", formula: "", value: 1 },
+                            { name: "长期执行", formula: "", value: 1 }
                         ]
                     },
                     {
                         title: "3. 成长心智",
                         items: [
-                            { name: "性格塑造", formula: "主动优化", value: 1 },
-                            { name: "神经链接", formula: "构建与加强", value: 1 },
-                            { name: "注意力", formula: "资源分配", value: 1 },
-                            { name: "动机审查", formula: "元认知", value: 1 },
-                            { name: "生产者视角", formula: "供需分析", value: 1 },
-                            { name: "价值交换", formula: "非零和", value: 1 },
-                            { name: "自信", formula: "成功体验", value: 1 },
-                            { name: "标签思维", formula: "去标签化", value: 1 },
-                            { name: "影响力", formula: "辐射范围", value: 1 },
-                            { name: "底线试探", formula: "风险控制", value: 1 },
-                            { name: "自给希望", formula: "心态韧性", value: 1 },
-                            { name: "活在未来", formula: "长期主义", value: 1 }
+                            { name: "性格塑造", formula: "", value: 1 },
+                            { name: "神经链接", formula: "", value: 1 },
+                            { name: "注意力", formula: "", value: 1 },
+                            { name: "动机审查", formula: "", value: 1 },
+                            { name: "生产者视角", formula: "", value: 1 },
+                            { name: "价值交换", formula: "", value: 1 },
+                            { name: "自信", formula: "", value: 1 },
+                            { name: "标签思维", formula: "", value: 1 },
+                            { name: "影响力", formula: "", value: 1 },
+                            { name: "底线试探", formula: "", value: 1 },
+                            { name: "自给希望", formula: "", value: 1 },
+                            { name: "活在未来", formula: "", value: 1 }
                         ]
                     },
                     {
                         title: "4. 大学策略",
                         items: [
-                            { name: "尊重差异", formula: "包容度", value: 1 },
-                            { name: "合作能力", formula: "协同效应", value: 1 },
-                            { name: "资源思维", formula: "调用杠杆", value: 1 },
-                            { name: "突破补齐", formula: "长板策略", value: 1 },
-                            { name: "结识牛人", formula: "向上社交", value: 1 },
-                            { name: "环境审视", formula: "场域意识", value: 1 },
-                            { name: "圈子选择", formula: "筛选", value: 1 },
-                            { name: "圈子加入", formula: "融入", value: 1 },
-                            { name: "求助能力", formula: "向大佬提问", value: 1 }
+                            { name: "尊重差异", formula: "", value: 1 },
+                            { name: "合作能力", formula: "", value: 1 },
+                            { name: "资源思维", formula: "", value: 1 },
+                            { name: "突破补齐", formula: "", value: 1 },
+                            { name: "结识牛人", formula: "", value: 1 },
+                            { name: "环境审视", formula: "", value: 1 },
+                            { name: "圈子选择", formula: "", value: 1 },
+                            { name: "圈子加入", formula: "", value: 1 },
+                            { name: "求助能力", formula: "", value: 1 }
                         ]
                     }
                 ]
             },
 
-            // C. 财富创造 (扁平结构，加法)
+            // C. 财富创造
             wealth: {
-                title: "C. 财富创造 (资产)",
+                title: "C. 财富创造",
                 method: "sum",
                 items: [
-                    { name: "基准状态", formula: "初始设定", value: 1 }
+                    { name: "基准状态", formula: "", value: 1 }
                 ]
             }
         };
 
         // ========================================================
-        // 渲染引擎 (支持嵌套)
+        // 渲染引擎 (包含子标题样式优化)
         // ========================================================
         
         function calculateItems(items, method) {
@@ -268,26 +282,22 @@
                 let sectionTotal = 0;
                 let contentHTML = '';
 
-                // 逻辑分支：处理嵌套 vs 扁平
                 if (section.subSections) {
-                    // --- 嵌套模式 (如成长板块) ---
-                    // 总分初始化：乘法模式初始为1，加法模式初始为0
+                    // --- 嵌套模式 ---
                     sectionTotal = section.method === 'multiply' ? 1 : 0;
 
                     section.subSections.forEach(sub => {
-                        // 1. 算子版块分
                         const subTotal = calculateItems(sub.items, section.method);
                         
-                        // 2. 算大板块总分
                         if (section.method === 'multiply') sectionTotal *= subTotal;
                         else sectionTotal += subTotal;
 
-                        // 3. 生成子版块 HTML
+                        // 使用新的 subsection-header 类
                         contentHTML += `
-                            <div style="margin-bottom: 20px;">
-                                <div style="display:flex; justify-content:space-between; margin-bottom:5px; padding:0 5px;">
-                                    <span style="font-size:0.75rem; color:var(--text-dim); font-weight:600;">${sub.title}</span>
-                                    <span style="font-size:0.75rem; color:var(--text-main); opacity:0.7;">Sub: ${subTotal.toFixed(2)}</span>
+                            <div style="margin-bottom: 25px;">
+                                <div class="subsection-header">
+                                    <span class="subsection-title">${sub.title}</span>
+                                    <span class="subsection-title" style="opacity:0.7;">Sub: ${subTotal.toFixed(2)}</span>
                                 </div>
                                 <div class="card-list">
                                     ${sub.items.map(item => `
@@ -305,7 +315,7 @@
                     });
 
                 } else {
-                    // --- 扁平模式 (如工作/财富) ---
+                    // --- 扁平模式 ---
                     sectionTotal = calculateItems(section.items, section.method);
                     contentHTML = `
                         <div class="card-list">
@@ -322,15 +332,13 @@
                     `;
                 }
 
-                // 累加 Grand Total (各板块间通常相加)
                 grandTotal += sectionTotal;
 
-                // 渲染整个大板块
                 const sectionHTML = `
                     <div class="section">
                         <div class="section-header">
                             <span class="section-title">${section.title}</span>
-                            <span class="section-total" style="color:var(--text-main); font-weight:bold;">Total: ${sectionTotal.toFixed(2)}</span>
+                            <span class="section-total">Total: ${sectionTotal.toFixed(2)}</span>
                         </div>
                         ${contentHTML}
                     </div>
