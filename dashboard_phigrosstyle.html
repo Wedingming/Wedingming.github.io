@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedm_ Phigros Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,400;0,700;1,900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ====================
+           Phigros 风格变量定义
+           ==================== */
+        :root {
+            --bg-dark: #0a0a0a;
+            --card-bg: rgba(255, 255, 255, 0.08); /* 磨砂玻璃感 */
+            --card-hover: rgba(255, 255, 255, 0.15);
+            
+            --phi-blue: #00f0ff;  /* 经典的 Phi 蓝 */
+            --phi-gold: #ffe600;  /* 判定金 (Perfect) */
+            --text-main: #ffffff;
+            --text-sub: rgba(255, 255, 255, 0.6);
+            
+            --skew-angle: -15deg; /* 核心斜角 */
+            --anti-skew: 15deg;   /*文字扶正角 */
+        }
+
+        body {
+            font-family: 'Exo 2', -apple-system, sans-serif; /* 使用科技字体 */
+            background-color: var(--bg-dark);
+            /* 动态背景图纹 */
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)),
+                repeating-linear-gradient(45deg, #1a1a1a 0, #1a1a1a 1px, transparent 0, transparent 50%);
+            background-size: cover;
+            color: var(--text-main);
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden; /* 防止斜切导致的滚动条 */
+        }
+
+        /* 容器限制 */
+        .container {
+            max-width: 650px;
+            margin: 0 auto;
+            padding-bottom: 50px;
+        }
+
+        /* ====================
+           顶部总分 (Ranking Score)
+           ==================== */
+        .total-container {
+            text-align: right; /* Phigros 风格通常右对齐或不规则对齐 */
+            margin-bottom: 50px;
+            padding-right: 20px;
+            position: relative;
+        }
+
+        /* 装饰性背景条 */
+        .total-bg-bar {
+            position: absolute;
+            top: 10px;
+            right: -50px;
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1));
+            transform: skewX(var(--skew-angle));
+            z-index: -1;
+        }
+
+        .total-label {
+            font-size: 1rem;
+            color: var(--phi-blue);
+            font-style: italic;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px var(--phi-blue);
+            margin-right: 10px;
+        }
+
+        .total-score {
+            font-size: 5rem;
+            font-weight: 900;
+            font-style: italic;
+            color: var(--text-main);
+            line-height: 0.9;
+            text-shadow: 2px 2px 0px var(--phi-blue); /* 简单的错位投影 */
+            letter-spacing: -2px;
+        }
+
+        /* ====================
+           大板块标题 (Chapter Select)
+           ==================== */
+        .section {
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 15px;
+            padding: 10px 20px;
+            border-bottom: 2px solid var(--text-sub);
+            /* 整体斜切 */
+            transform: skewX(var(--skew-angle));
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05));
+        }
+
+        /* 因为父容器斜了，里面的文字要扶正 */
+        .section-header > * {
+            transform: skewX(var(--anti-skew));
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            font-style: italic;
+            color: var(--text-main);
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+
+        .section-total {
+            font-size: 1.2rem;
+            color: var(--phi-gold);
+            font-weight: bold;
+            font-family: 'Exo 2', monospace; /* 数字用等宽字体更有味 */
+            text-shadow: 0 0 8px var(--phi-gold);
+        }
+
+        /* ====================
+           子分类 (Song List Header)
+           ==================== */
+        .subsection-header {
+            display: flex;
+            justify-content: space-between;
+            margin: 25px 0 10px 0;
+            padding-left: 10px;
+        }
+
+        /* 装饰性的小斜块 */
+        .subsection-tag {
+            display: inline-block;
+            background: var(--phi-blue);
+            color: #000;
+            font-weight: 800;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            transform: skewX(var(--skew-angle));
+            margin-right: 10px;
+            box-shadow: 0 0 5px var(--phi-blue);
+        }
+
+        .subsection-title {
+            font-size: 0.9rem;
+            color: var(--text-sub);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-style: italic;
+        }
+
+        /* ====================
+           卡片列表 (Track List)
+           ==================== */
+        .card-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px; /* 卡片之间要有空隙 */
+        }
+
+        .factor-card {
+            background-color: var(--card-bg);
+            padding: 12px 25px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            
+            /* 核心斜切样式 */
+            transform: skewX(var(--skew-angle));
+            border-left: 4px solid var(--text-sub); /* 默认灰色条 */
+            transition: all 0.2s ease-out;
+            
+            /* 玻璃质感边框 */
+            border-top: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            backdrop-filter: blur(2px);
+        }
+
+        /* 悬停高亮效果 */
+        .factor-card:hover {
+            background-color: var(--card-hover);
+            border-left-color: var(--phi-gold); /* 悬停变金色 */
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+            padding-left: 35px; /* 动态位移 */
+        }
+
+        /* 内容扶正 */
+        .factor-content {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transform: skewX(var(--anti-skew)); /* 把文字扶正 */
+        }
+
+        .factor-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: 0.5px;
+        }
+
+        .factor-right-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-align: right;
+        }
+
+        .factor-formula {
+            font-size: 0.7rem;
+            color: var(--text-sub);
+            font-family: monospace;
+            opacity: 0.6;
+        }
+
+        .factor-value {
+            font-size: 1.4rem;
+            font-weight: 800;
+            font-style: italic;
+            color: var(--text-main);
+            min-width: 40px;
+            text-align: right;
+            /* 数字辉光 */
+            text-shadow: 0 0 5px rgba(255,255,255,0.5);
+        }
+
+        /* 特殊高亮值：当数值大于1时，显示为金色 */
+        .factor-value.high-score {
+            color: var(--phi-gold);
+            text-shadow: 0 0 8px var(--phi-gold);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="total-container">
+            <div class="total-bg-bar"></div> <span class="total-label">TOTAL EFFICIENCY</span>
+            <div id="grand-total" class="total-score">0.00</div>
+        </div>
+
+        <div id="dashboard-content"></div>
+    </div>
+
+    <script>
+        const data = {
+            work: {
+                title: "Chapter A. WORK",
+                method: "sum", 
+                items: [
+                    { name: "Current Output", formula: "", value: 0 }
+                ]
+            },
+            
+            growth: {
+                title: "Chapter B. GROWTH",
+                method: "multiply", 
+                subSections: [
+                    {
+                        title: "1. Reading System",
+                        items: [
+                            { name: "Reading Speed", formula: "", value: 1 },
+                            { name: "Comprehension", formula: "", value: 1 },
+                            { name: "Daily Duration", formula: "", value: 1 },
+                            { name: "Output Ratio", formula: "", value: 1 },
+                            { name: "Selection", formula: "", value: 1 }
+                        ]
+                    },
+                    {
+                        title: "2. Value System",
+                        items: [
+                            { name: "Self-Exploration", formula: "", value: 1 },
+                            { name: "Values Iteration", formula: "", value: 1 },
+                            { name: "Goal Breakdown", formula: "", value: 1 },
+                            { name: "Choice Timing", formula: "", value: 1 },
+                            { name: "Logical Self", formula: "", value: 1 },
+                            { name: "Execution", formula: "", value: 1 },
+                            { name: "Review Cycle", formula: "", value: 1 },
+                            { name: "Reverse Logic", formula: "", value: 1 },
+                            { name: "Accumulation", formula: "", value: 1 },
+                            { name: "Endurance", formula: "", value: 1 }
+                        ]
+                    },
+                    {
+                        title: "3. Growth Mindset",
+                        items: [
+                            { name: "Character", formula: "", value: 1 },
+                            { name: "Neural Links", formula: "", value: 1 },
+                            { name: "Attention", formula: "", value: 1 },
+                            { name: "Motivation", formula: "", value: 1 },
+                            { name: "Producer View", formula: "", value: 1 },
+                            { name: "Value Exchange", formula: "", value: 1 },
+                            { name: "Confidence", formula: "", value: 1 },
+                            { name: "De-labeling", formula: "", value: 1 },
+                            { name: "Influence", formula: "", value: 1 },
+                            { name: "Risk Test", formula: "", value: 1 },
+                            { name: "Self-Hope", formula: "", value: 1 },
+                            { name: "Future Living", formula: "", value: 1 }
+                        ]
+                    },
+                    {
+                        title: "4. University Strategy",
+                        items: [
+                            { name: "Respect Diff", formula: "", value: 1 },
+                            { name: "Cooperation", formula: "", value: 1 },
+                            { name: "Leverage", formula: "", value: 1 },
+                            { name: "Breakthrough", formula: "", value: 1 },
+                            { name: "Network Up", formula: "", value: 1 },
+                            { name: "Env Audit", formula: "", value: 1 },
+                            { name: "Circle Select", formula: "", value: 1 },
+                            { name: "Circle Join", formula: "", value: 1 },
+                            { name: "Ask For Help", formula: "", value: 1 }
+                        ]
+                    }
+                ]
+            },
+
+            wealth: {
+                title: "Chapter C. WEALTH",
+                method: "sum",
+                items: [
+                    { name: "Baseline", formula: "", value: 1 }
+                ]
+            }
+        };
+
+        // ========================================================
+        // 渲染引擎 (Phigros 风格适配版)
+        // ========================================================
+        
+        function calculateItems(items, method) {
+            if (!items || items.length === 0) return method === 'multiply' ? 1 : 0;
+            let total = method === 'multiply' ? 1 : 0;
+            items.forEach(item => {
+                if (method === 'multiply') total *= item.value;
+                else total += item.value;
+            });
+            return total;
+        }
+
+        function renderDashboard() {
+            const container = document.getElementById('dashboard-content');
+            let grandTotal = 0;
+            container.innerHTML = '';
+
+            for (const key in data) {
+                const section = data[key];
+                let sectionTotal = 0;
+                let contentHTML = '';
+
+                if (section.subSections) {
+                    sectionTotal = section.method === 'multiply' ? 1 : 0;
+                    section.subSections.forEach(sub => {
+                        const subTotal = calculateItems(sub.items, section.method);
+                        if (section.method === 'multiply') sectionTotal *= subTotal;
+                        else sectionTotal += subTotal;
+
+                        // 子版块渲染 (Tag 风格)
+                        contentHTML += `
+                            <div style="margin-bottom: 25px;">
+                                <div class="subsection-header">
+                                    <div>
+                                        <span class="subsection-tag">IN</span> <span class="subsection-title">${sub.title}</span>
+                                    </div>
+                                    <span class="subsection-title" style="color:var(--phi-blue); text-shadow:0 0 5px var(--phi-blue);">
+                                        ${subTotal.toFixed(2)}
+                                    </span>
+                                </div>
+                                <div class="card-list">
+                                    ${sub.items.map(item => `
+                                        <div class="factor-card">
+                                            <div class="factor-content">
+                                                <div class="factor-name">${item.name}</div>
+                                                <div class="factor-right-group">
+                                                    <div class="factor-formula">${item.formula}</div>
+                                                    <div class="factor-value ${item.value > 1 ? 'high-score' : ''}">${item.value}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    sectionTotal = calculateItems(section.items, section.method);
+                    contentHTML = `
+                        <div class="card-list">
+                            ${section.items.map(item => `
+                                <div class="factor-card">
+                                    <div class="factor-content">
+                                        <div class="factor-name">${item.name}</div>
+                                        <div class="factor-right-group">
+                                            <div class="factor-formula">${item.formula}</div>
+                                            <div class="factor-value ${item.value > 1 ? 'high-score' : ''}">${item.value}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+
+                grandTotal += sectionTotal;
+
+                // 大版块渲染 (Chapter 风格)
+                const sectionHTML = `
+                    <div class="section">
+                        <div class="section-header">
+                            <div class="section-title">${section.title}</div>
+                            <div class="section-total">${sectionTotal.toFixed(2)}</div>
+                        </div>
+                        ${contentHTML}
+                    </div>
+                `;
+                container.innerHTML += sectionHTML;
+            }
+
+            document.getElementById('grand-total').innerText = grandTotal.toFixed(2);
+        }
+
+        renderDashboard();
+    </script>
+</body>
+</html>
