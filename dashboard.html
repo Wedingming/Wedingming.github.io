@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wedm_ Efficiency Dashboard</title>
+    <title>Efficiency Dashboard</title>
     <style>
         /* ====================
            CSS 样式配置
@@ -14,7 +14,7 @@
             --text-main: #ffffff;
             --text-dim: #666666;
             --border-color: #333333;
-            --section-title: #ffffff; /* 标题改亮白 */
+            --section-title: #ffffff;
         }
 
         @media (prefers-color-scheme: light) {
@@ -40,28 +40,29 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        /* 顶部总分 */
+        /* 顶部总分 (左对齐) */
         .total-container {
-            text-align: center;
+            text-align: left; /* 改为左对齐 */
             margin-bottom: 40px;
-            padding-top: 20px;
+            padding-top: 10px;
+            padding-left: 5px;
         }
 
         .total-label {
             font-size: 0.8rem;
             color: var(--text-dim);
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 8px;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
             font-weight: 600;
         }
 
         .total-score {
-            font-size: 4.5rem;
-            font-weight: 700;
+            font-size: 4rem;
+            font-weight: 800;
             color: var(--text-main);
             line-height: 1;
-            letter-spacing: -3px;
+            letter-spacing: -2px;
         }
 
         /* 板块 */
@@ -73,22 +74,21 @@
             display: flex;
             justify-content: space-between;
             align-items: baseline;
-            margin-bottom: 15px; /* 增加间距 */
+            margin-bottom: 15px;
             padding: 0 5px;
-            border-bottom: 2px solid var(--border-color); /*以此分割*/
+            border-bottom: 2px solid var(--border-color);
             padding-bottom: 8px;
         }
 
-        /* 【修改点】大标题变大、变亮 */
         .section-title {
-            font-size: 1.5rem; /* 从0.85rem改大 */
-            font-weight: 800;  /* 特粗 */
+            font-size: 1.5rem;
+            font-weight: 800;
             color: var(--section-title);
             letter-spacing: -0.5px;
         }
 
         .section-total {
-            font-size: 1.2rem; /* 总分也跟着变大 */
+            font-size: 1.2rem;
             font-weight: 700;
             color: var(--text-main);
         }
@@ -99,14 +99,15 @@
             justify-content: space-between; 
             margin-bottom: 8px; 
             padding: 0 5px;
-            margin-top: 20px;
+            margin-top: 25px;
         }
         
         .subsection-title {
-            font-size: 0.9rem; 
+            font-size: 0.85rem; 
             color: var(--text-dim); 
             font-weight: 600;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         /* 列表容器 */
@@ -130,7 +131,7 @@
         }
 
         .factor-name {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             color: var(--text-main);
             font-weight: 500;
         }
@@ -138,16 +139,19 @@
         .factor-right-group {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
             text-align: right;
         }
 
+        /* 公式支持多行显示 */
         .factor-formula {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-dim);
             font-family: "SF Mono", "Menlo", "Courier New", monospace;
-            opacity: 0.8;
-            /* 公式如果为空，这里就不会占位 */
+            opacity: 0.9;
+            white-space: pre-line; /* 核心：支持换行符 \n */
+            line-height: 1.3;      /* 行间距紧凑 */
+            text-align: right;     /* 右对齐 */
         }
 
         .factor-value {
@@ -168,25 +172,24 @@
 
     <div id="dashboard-content"></div>
 
-
     <script>
         // ========================================================
         // 【数据配置区】
-        // 公式(formula)已留空，你可以随时填入自己的算法备注
+        // 提示：formula 字段可以使用 \n 来换行，实现两行对照
         // ========================================================
         const data = {
-            // A. 工作
+            // 工作
             work: {
-                title: "A. 工作",
+                title: "工作",
                 method: "sum", 
                 items: [
-                    { name: "当前产出", formula: "", value: 0 }
+                    { name: "当前产出", formula: "手动劳动\nAI辅助", value: 0 } 
                 ]
             },
             
-            // B. 个人成长
+            // 个人成长
             growth: {
-                title: "B. 个人成长",
+                title: "个人成长",
                 method: "multiply", 
                 subSections: [
                     {
@@ -248,9 +251,9 @@
                 ]
             },
 
-            // C. 财富创造
+            // 财富创造
             wealth: {
-                title: "C. 财富创造",
+                title: "财富创造",
                 method: "sum",
                 items: [
                     { name: "基准状态", formula: "", value: 1 }
@@ -259,7 +262,7 @@
         };
 
         // ========================================================
-        // 渲染引擎 (包含子标题样式优化)
+        // 渲染引擎
         // ========================================================
         
         function calculateItems(items, method) {
@@ -283,7 +286,7 @@
                 let contentHTML = '';
 
                 if (section.subSections) {
-                    // --- 嵌套模式 ---
+                    // 嵌套模式
                     sectionTotal = section.method === 'multiply' ? 1 : 0;
 
                     section.subSections.forEach(sub => {
@@ -292,7 +295,6 @@
                         if (section.method === 'multiply') sectionTotal *= subTotal;
                         else sectionTotal += subTotal;
 
-                        // 使用新的 subsection-header 类
                         contentHTML += `
                             <div style="margin-bottom: 25px;">
                                 <div class="subsection-header">
@@ -315,7 +317,7 @@
                     });
 
                 } else {
-                    // --- 扁平模式 ---
+                    // 扁平模式
                     sectionTotal = calculateItems(section.items, section.method);
                     contentHTML = `
                         <div class="card-list">
