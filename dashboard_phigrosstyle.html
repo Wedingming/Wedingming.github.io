@@ -2,344 +2,350 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Wedm_ Phigros Dashboard</title>
     <style>
-        /* ====================
-           Phigros 风格核心样式
-           ==================== */
+        /* =========================================
+           Phigros 风格核心变量
+           ========================================= */
         :root {
-            --bg-color: #000000;
-            --item-bg: rgba(255, 255, 255, 0.05);
-            --item-bg-active: rgba(255, 255, 255, 0.9);
-            --text-main: #ffffff;
-            --text-sub: rgba(255, 255, 255, 0.5);
-            --text-active: #000000;
-            --accent-color: #62e0ff; /* 典型的 Phigros 蓝/青 */
-            --accent-glow: rgba(98, 224, 255, 0.6);
-            --skew-angle: -15deg;
-            --unskew-angle: 15deg;
+            --bg-color: #050505;        /* 极黑背景 */
+            --card-dim: rgba(255, 255, 255, 0.05); /* 未选中卡片背景 */
+            --card-active: rgba(255, 255, 255, 0.95); /* 选中卡片背景 (高亮) */
+            --text-dim: #888;
+            --text-active: #000;        /* 选中时文字反黑 */
+            --accent-cyan: #00EAFF;     /* 科技蓝 (装饰线) */
+            --accent-yellow: #FFE600;   /* 警告黄 (装饰线) */
+            --skew-deg: -15deg;         /* 核心斜角 */
+            --skew-fix: 15deg;          /* 文字反斜 */
         }
 
         body {
-            font-family: "Exo 2", "Eurostile", -apple-system, sans-serif; /* 科技感字体优先 */
             background-color: var(--bg-color);
-            background-image: 
-                linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)),
-                url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070&auto=format&fit=crop'); /* 抽象背景 */
-            background-size: cover;
-            background-attachment: fixed;
-            background-position: center;
-            color: var(--text-main);
             margin: 0;
+            padding: 0;
+            font-family: "Exo 2", "Eurostile", -apple-system, sans-serif; /* 科技字体优先 */
+            overflow: hidden; /* 禁止 Body 滚动，只允许列表滚动 */
+            color: white;
             height: 100vh;
-            overflow: hidden; /* 禁止 body 滚动，使用内部容器 */
+            width: 100vw;
         }
 
-        /* 顶部信息栏 (RKS 风格) */
-        .top-bar {
+        /* 背景装饰线 (模拟 Phigros 背景) */
+        .bg-decoration {
             position: fixed;
-            top: 20px;
-            right: 0;
-            width: 100%;
-            height: 80px;
-            z-index: 100;
-            pointer-events: none; /* 让点击穿透 */
-            display: flex;
-            justify-content: flex-end;
-            padding-right: 20px;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: 
+                linear-gradient(45deg, transparent 40%, rgba(0, 234, 255, 0.05) 45%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 234, 255, 0.1), transparent 40%);
+            z-index: -1;
+            pointer-events: none;
         }
 
-        .rks-plate {
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 5px 30px;
-            transform: skewX(var(--skew-angle));
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            border-right: 4px solid var(--accent-color);
-            box-shadow: 0 0 15px var(--accent-glow);
+        /* =========================================
+           左上角：总分展示 (Total Ranking)
+           ========================================= */
+        .header-score {
+            position: fixed;
+            top: 30px;
+            left: 20px;
+            z-index: 10;
         }
-
-        .rks-label {
-            transform: skewX(var(--unskew-angle));
-            font-size: 0.7rem;
-            color: var(--accent-color);
-            font-weight: 700;
+        
+        .header-label {
+            font-size: 0.8rem;
+            color: var(--accent-cyan);
             letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(0, 234, 255, 0.5);
         }
 
-        .rks-value {
-            transform: skewX(var(--unskew-angle));
-            font-size: 2.2rem;
+        .header-value {
+            font-size: 3.5rem;
             font-weight: 900;
-            color: #fff;
-            text-shadow: 0 0 10px rgba(255,255,255,0.5);
-            font-family: monospace; /* 数字等宽 */
+            font-style: italic; /* 斜体数字 */
+            line-height: 1;
+            margin-left: -5px;
         }
 
-        /* 滚动列表容器 */
-        .scroll-viewport {
+        /* =========================================
+           核心交互区：滚动列表
+           ========================================= */
+        .scroll-container {
             height: 100vh;
             overflow-y: scroll;
-            overflow-x: hidden;
-            padding-top: 50vh;    /* 留出空间让第一个元素能到中间 */
-            padding-bottom: 50vh; /* 留出空间让最后一个元素能到中间 */
             scroll-behavior: smooth;
             /* 隐藏滚动条 */
-            -ms-overflow-style: none;  
-            scrollbar-width: none;  
+            scrollbar-width: none; 
+            padding-top: 40vh;    /* 留白，让第一项能滚到中间 */
+            padding-bottom: 40vh; /* 留白，让最后一项能滚到中间 */
+            
+            /* CSS Snap: 模拟选曲吸附感 */
+            scroll-snap-type: y mandatory; 
         }
-        .scroll-viewport::-webkit-scrollbar {
+        .scroll-container::-webkit-scrollbar {
             display: none;
         }
 
-        /* 列表内容包裹 */
-        .list-content {
+        /* 列表项容器 */
+        .list-item-wrapper {
+            /* 布局定位 */
+            width: 85%;
+            margin-left: auto; /* 靠右布局，类似 Phigros 选曲 */
+            margin-right: 0;   /* 贴右边 */
+            height: 90px;      /* 单个卡片高度 */
+            margin-bottom: 25px;
+            
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 20px; /* 卡片间距 */
-            padding-left: 20px; /* 视觉补偿 skew 带来的偏移 */
+            justify-content: flex-end; /* 内容靠右 */
+            
+            /* Snap 对齐点 */
+            scroll-snap-align: center;
+            
+            perspective: 1000px; /* 3D 效果准备 */
         }
 
-        /* ==============
-           分割线 / 章节头 (Chapter)
-           ============== */
-        .chapter-header {
+        /* 平行四边形卡片 */
+        .phi-card {
             width: 100%;
-            max-width: 600px;
-            text-align: left;
-            margin-top: 40px;
-            margin-bottom: 10px;
-            padding-left: 10%;
+            height: 100%;
+            background: var(--card-dim);
+            transform: skewX(var(--skew-deg)); /* 斜切 */
+            border-left: 4px solid #333; /* 默认左边框 */
+            
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px 0 40px;
+            
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); /* 弹性动画 */
             position: relative;
-            opacity: 0.8;
+            
+            /* 玻璃质感 */
+            backdrop-filter: blur(5px);
+            box-shadow: 10px 10px 20px rgba(0,0,0,0.5);
         }
 
-        .chapter-title {
-            font-size: 1.5rem;
-            font-weight: 900;
-            font-style: italic;
-            color: #fff;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            border-bottom: 2px solid var(--accent-color);
-            display: inline-block;
-            padding-bottom: 5px;
-            text-shadow: 0 0 5px var(--accent-color);
+        /* 选中状态 (Active) - JS 控制 */
+        .list-item-wrapper.active .phi-card {
+            background: var(--card-active); /* 变白 */
+            transform: skewX(var(--skew-deg)) scale(1.05) translateX(-20px); /* 放大并向左突进 */
+            border-left: 8px solid var(--accent-cyan); /* 亮蓝边框 */
+            box-shadow: 
+                0 0 30px rgba(0, 234, 255, 0.4),
+                inset 0 0 20px rgba(255, 255, 255, 0.8);
+            z-index: 2;
+        }
+
+        /* 板块分割线 (Section Header) */
+        .section-separator {
+            height: 40px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+            padding-right: 20px;
+            scroll-snap-align: start;
         }
         
-        .chapter-score {
+        .section-line {
+            height: 2px;
+            width: 50%;
+            background: linear-gradient(to left, var(--accent-yellow), transparent);
+            transform: skewX(var(--skew-deg));
+        }
+        
+        .section-text {
+            color: var(--accent-yellow);
             font-size: 1rem;
-            color: var(--accent-color);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
             margin-left: 10px;
-            font-weight: normal;
+            font-style: italic;
+            text-shadow: 0 0 10px rgba(255, 230, 0, 0.5);
         }
 
-        /* ==============
-           条目卡片 (Song Item)
-           ============== */
-        .phi-item {
-            width: 90%;
-            max-width: 500px;
-            height: 70px; /* 默认高度 */
-            background: var(--item-bg);
-            border: 1px solid rgba(255,255,255,0.1);
-            transform: skewX(var(--skew-angle)) scale(0.95); /* 默认微缩 */
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 30px;
-            transition: all 0.1s linear; /* 极速响应滚动 */
-            position: relative;
-            cursor: pointer;
-            backdrop-filter: blur(5px);
-        }
-
-        /* 内部内容反向纠正 skew */
+        /* =========================================
+           内容排版 (反斜)
+           ========================================= */
+        /* 为了防止文字歪斜，内部再反向 skew */
         .phi-content {
-            transform: skewX(var(--unskew-angle));
+            transform: skewX(var(--skew-fix));
             width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        /* 左侧信息 */
-        .info-left {
+        /* 左侧：信息层叠 */
+        .info-group {
             display: flex;
             flex-direction: column;
         }
 
         .item-name {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text-main);
-            letter-spacing: 1px;
-            transition: color 0.1s;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 4px;
+            transition: color 0.2s;
         }
 
         .item-formula {
-            font-size: 0.65rem;
-            color: var(--text-sub);
+            font-size: 0.7rem;
+            color: #666;
             font-family: monospace;
-            margin-top: 2px;
             text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        /* 右侧分数 */
+        /* 选中时文字颜色翻转 */
+        .list-item-wrapper.active .item-name { color: #000; }
+        .list-item-wrapper.active .item-formula { color: #444; font-weight: bold; }
+
+        /* 右侧：分数展示 */
+        .score-group {
+            text-align: right;
+        }
+
         .item-score {
-            font-size: 1.4rem;
+            font-size: 2rem;
             font-weight: 900;
-            color: var(--text-main);
-            opacity: 0.7;
-            font-family: monospace;
-            transition: all 0.1s;
-        }
-
-        /* ==============
-           高亮激活态 (Active State)
-           ============== */
-        .phi-item.active {
-            background: var(--item-bg-active); /* 变白 */
-            transform: skewX(var(--skew-angle)) scale(1.1); /* 放大 */
-            border: 2px solid #fff;
-            box-shadow: 
-                0 0 20px rgba(255,255,255,0.3),
-                inset 0 0 20px rgba(255,255,255,0.3);
-            z-index: 10;
-        }
-
-        .phi-item.active .item-name {
-            color: var(--text-active); /* 变黑 */
-            font-size: 1.3rem;
-        }
-
-        .phi-item.active .item-formula {
-            color: rgba(0,0,0,0.6); /* 变深灰 */
-        }
-
-        .phi-item.active .item-score {
-            color: var(--text-active); /* 变黑 */
-            opacity: 1;
-            font-size: 1.8rem;
-        }
-
-        /* 装饰用的左侧条 (Diff Color) */
-        .phi-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 8px;
-            background: var(--accent-color);
-            opacity: 0.3;
-            transition: opacity 0.1s;
+            color: #fff;
+            font-style: italic;
         }
         
-        .phi-item.active::before {
-            opacity: 1;
-            box-shadow: 0 0 10px var(--accent-color);
+        /* 选中时分数颜色 */
+        .list-item-wrapper.active .item-score {
+            color: #000;
+            text-shadow: 0 0 0; /* 移除阴影保持清晰 */
         }
+        
+        .rank-badge {
+            font-size: 0.7rem;
+            background: #333;
+            padding: 2px 6px;
+            border-radius: 2px;
+            margin-left: 5px;
+            vertical-align: middle;
+            transform: skewX(-10deg);
+            display: inline-block;
+        }
+        
+        .list-item-wrapper.active .rank-badge {
+            background: var(--accent-cyan);
+            color: #000;
+        }
+
+        /* 遮罩层 (上下渐变遮罩) */
+        .vignette {
+            position: fixed;
+            left: 0; right: 0;
+            height: 15vh;
+            z-index: 5;
+            pointer-events: none;
+        }
+        .v-top { top: 0; background: linear-gradient(to bottom, black, transparent); }
+        .v-bottom { bottom: 0; background: linear-gradient(to top, black, transparent); }
 
     </style>
 </head>
 <body>
 
-    <div class="top-bar">
-        <div class="rks-plate">
-            <div class="rks-label">TOTAL EFFICIENCY</div>
-            <div class="rks-value" id="rks-display">00.00</div>
-        </div>
+    <div class="bg-decoration"></div>
+    <div class="vignette v-top"></div>
+    <div class="vignette v-bottom"></div>
+
+    <div class="header-score">
+        <div class="header-label">Total Efficiency</div>
+        <div id="grand-total" class="header-value">0.00</div>
     </div>
 
-    <div class="scroll-viewport" id="viewport">
-        <div class="list-content" id="list-container">
-            </div>
-    </div>
+    <div class="scroll-container" id="scroll-track">
+        </div>
 
     <script>
         // ========================================================
-        // 【数据配置区】
-        // 保持原有的数据结构，只需要改这里
+        // 1. 数据配置 (逻辑完全保留)
         // ========================================================
         const data = {
             work: {
-                title: "Chapter I. WORK",
+                title: "Chapter A: Work",
                 method: "sum", 
                 items: [
-                    { name: "Current Output", formula: "Base Level", value: 0 }
+                    { name: "Current Output", formula: "No Data", value: 0 }
                 ]
             },
             
             growth: {
-                title: "Chapter II. GROWTH",
+                title: "Chapter B: Growth",
                 method: "multiply", 
                 subSections: [
                     {
-                        title: "System: Reading",
+                        title: "System 1: Reading",
                         items: [
-                            { name: "Speed", formula: "WPM", value: 1 },
-                            { name: "Understanding", formula: "Conversion", value: 1 },
-                            { name: "Duration", formula: "Time/Day", value: 1 },
+                            { name: "Read Speed", formula: "WPM", value: 1 },
+                            { name: "Undst Rate", formula: "%", value: 1 },
+                            { name: "Duration", formula: "Hours", value: 1 },
                             { name: "Output Ratio", formula: "Out/In", value: 1 },
-                            { name: "Selection", formula: "Quality", value: 1 }
+                            { name: "Filter", formula: "Signal/Noise", value: 1 }
                         ]
                     },
                     {
-                        title: "System: Values",
+                        title: "System 2: Value",
                         items: [
-                            { name: "Exploration", formula: "Clarity", value: 1 },
-                            { name: "Iteration", formula: "Update", value: 1 },
-                            { name: "Breakdown", formula: "Granularity", value: 1 },
-                            { name: "Timing", formula: "Frequency", value: 1 },
-                            { name: "Logic", formula: "Self-Consistent", value: 1 },
+                            { name: "Self Explore", formula: "Clarity", value: 1 },
+                            { name: "Values Iter", formula: "Update", value: 1 },
+                            { name: "Goal Split", formula: "Granularity", value: 1 },
+                            { name: "Timing", formula: "Freq", value: 1 },
+                            { name: "Logic Self", formula: "Consistency", value: 1 },
                             { name: "Execution", formula: "Action", value: 1 },
-                            { name: "Review", formula: "Correction", value: 1 },
-                            { name: "Deduction", formula: "Causality", value: 1 },
-                            { name: "Compounding", formula: "Stacking", value: 1 },
+                            { name: "Review", formula: "Feedback", value: 1 },
+                            { name: "Reverse Eng", formula: "Causality", value: 1 },
+                            { name: "Accumulation", formula: "Compound", value: 1 },
                             { name: "Endurance", formula: "Long-term", value: 1 }
                         ]
                     },
                     {
-                        title: "System: Mindset",
+                        title: "System 3: Mindset",
                         items: [
-                            { name: "Character", formula: "Optimization", value: 1 },
-                            { name: "Neural Link", formula: "Build", value: 1 },
+                            { name: "Personality", formula: "Optimize", value: 1 },
+                            { name: "Neurons", formula: "Links", value: 1 },
                             { name: "Attention", formula: "Resource", value: 1 },
-                            { name: "Metacognition", formula: "Review", value: 1 },
+                            { name: "Motivation", formula: "Meta-Cog", value: 1 },
                             { name: "Producer View", formula: "Supply/Demand", value: 1 },
-                            { name: "Exchange", formula: "Non-Zero Sum", value: 1 },
-                            { name: "Confidence", formula: "Success Rate", value: 1 },
-                            { name: "Unlabeling", formula: "Identity", value: 1 },
+                            { name: "Exchange", formula: "Non-Zero", value: 1 },
+                            { name: "Confidence", formula: "Successes", value: 1 },
+                            { name: "No Labels", formula: "Fluidity", value: 1 },
                             { name: "Influence", formula: "Radius", value: 1 },
-                            { name: "Risk Control", formula: "Bottom Line", value: 1 },
-                            { name: "Resilience", formula: "Hope", value: 1 },
-                            { name: "Futurism", formula: "Long-term", value: 1 }
+                            { name: "Risk Test", formula: "Control", value: 1 },
+                            { name: "Hope", formula: "Resilience", value: 1 },
+                            { name: "Future Live", formula: "Vision", value: 1 }
                         ]
                     },
                     {
-                        title: "System: Strategy",
+                        title: "System 4: University",
                         items: [
-                            { name: "Diversity", formula: "Tolerance", value: 1 },
+                            { name: "Respect Diff", formula: "Tolerance", value: 1 },
                             { name: "Cooperation", formula: "Synergy", value: 1 },
-                            { name: "Leverage", formula: "Resource", value: 1 },
+                            { name: "Resource Mind", formula: "Leverage", value: 1 },
                             { name: "Breakthrough", formula: "Strength", value: 1 },
                             { name: "Networking", formula: "Upward", value: 1 },
                             { name: "Environment", formula: "Field", value: 1 },
-                            { name: "Filtering", formula: "Circle", value: 1 },
-                            { name: "Integration", formula: "Join", value: 1 },
-                            { name: "Asking", formula: "Help", value: 1 }
+                            { name: "Circle Select", formula: "Filter", value: 1 },
+                            { name: "Circle Join", formula: "Integration", value: 1 },
+                            { name: "Ask Help", formula: "Query", value: 1 }
                         ]
                     }
                 ]
             },
 
             wealth: {
-                title: "Chapter III. WEALTH",
+                title: "Chapter C: Wealth",
                 method: "sum",
                 items: [
                     { name: "Baseline", formula: "Initial", value: 1 }
@@ -348,13 +354,9 @@
         };
 
         // ========================================================
-        // 渲染与交互引擎
+        // 2. 渲染引擎 (Phigros 风格适配)
         // ========================================================
-
-        const listContainer = document.getElementById('list-container');
-        let grandTotal = 0;
-
-        // --- 计算工具 ---
+        
         function calculateItems(items, method) {
             if (!items || items.length === 0) return method === 'multiply' ? 1 : 0;
             let total = method === 'multiply' ? 1 : 0;
@@ -365,143 +367,112 @@
             return total;
         }
 
-        // --- 1. 渲染 DOM 结构 ---
-        function renderPhigrosUI() {
-            grandTotal = 0;
-            listContainer.innerHTML = ''; // Clear
+        function renderPhigrosDashboard() {
+            const track = document.getElementById('scroll-track');
+            let grandTotal = 0;
+            let htmlBuffer = '';
 
+            // 遍历大板块
             for (const key in data) {
                 const section = data[key];
                 let sectionTotal = 0;
 
-                // 计算分数
+                // 插入大板块分割线
+                htmlBuffer += `
+                    <div class="section-separator">
+                        <div class="section-line"></div>
+                        <div class="section-text">${section.title}</div>
+                    </div>
+                `;
+
                 if (section.subSections) {
+                    // 嵌套模式
                     sectionTotal = section.method === 'multiply' ? 1 : 0;
+                    
                     section.subSections.forEach(sub => {
                         const subTotal = calculateItems(sub.items, section.method);
                         if (section.method === 'multiply') sectionTotal *= subTotal;
                         else sectionTotal += subTotal;
+
+                        // 插入子板块小标题 (作为不可选中的装饰条)
+                        htmlBuffer += `
+                            <div class="section-separator" style="margin-bottom:10px; opacity:0.6;">
+                                <div class="section-line" style="background: linear-gradient(to left, #fff, transparent); width:30%;"></div>
+                                <div class="section-text" style="color:#fff; font-size:0.8rem;">${sub.title}</div>
+                            </div>
+                        `;
+
+                        // 渲染子板块内的条目
+                        sub.items.forEach(item => {
+                            htmlBuffer += createCardHTML(item);
+                        });
                     });
                 } else {
+                    // 扁平模式
                     sectionTotal = calculateItems(section.items, section.method);
-                }
-                grandTotal += sectionTotal;
-
-                // 渲染大标题 (Chapter Header)
-                const header = document.createElement('div');
-                header.className = 'chapter-header';
-                header.innerHTML = `
-                    <div class="chapter-title">${section.title}</div>
-                    <span class="chapter-score">Rank: ${sectionTotal.toFixed(2)}</span>
-                `;
-                listContainer.appendChild(header);
-
-                // 渲染列表项
-                if (section.subSections) {
-                    section.subSections.forEach(sub => {
-                        // 子标题作为分割线
-                        const subHeader = document.createElement('div');
-                        subHeader.style.cssText = "color:rgba(255,255,255,0.4); margin-top:15px; font-size:0.8rem; transform:skewX(-15deg); padding-left:20px;";
-                        subHeader.innerText = `// ${sub.title}`;
-                        listContainer.appendChild(subHeader);
-
-                        sub.items.forEach(item => createItemCard(item));
+                    section.items.forEach(item => {
+                        htmlBuffer += createCardHTML(item);
                     });
-                } else {
-                    section.items.forEach(item => createItemCard(item));
                 }
+
+                grandTotal += sectionTotal;
             }
 
-            // 更新 RKS
-            const rksDisplay = document.getElementById('rks-display');
-            animateValue(rksDisplay, 0, grandTotal, 1000);
+            track.innerHTML = htmlBuffer;
+            document.getElementById('grand-total').innerText = grandTotal.toFixed(2);
+            
+            // 启动高亮监听
+            initObserver();
         }
 
-        function createItemCard(item) {
-            const el = document.createElement('div');
-            el.className = 'phi-item';
-            el.innerHTML = `
-                <div class="phi-content">
-                    <div class="info-left">
-                        <div class="item-name">${item.name}</div>
-                        <div class="item-formula">${item.formula || 'UNNAMED'}</div>
+        // 生成单张卡片的 HTML
+        function createCardHTML(item) {
+            return `
+                <div class="list-item-wrapper">
+                    <div class="phi-card">
+                        <div class="phi-content">
+                            <div class="info-group">
+                                <div class="item-name">${item.name}</div>
+                                <div class="item-formula">${item.formula || 'FORMULA'}</div>
+                            </div>
+                            <div class="score-group">
+                                <span class="item-score">${item.value}</span>
+                                <span class="rank-badge">IV</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="item-score">${item.value}</div>
                 </div>
             `;
-            listContainer.appendChild(el);
         }
 
-        // --- 2. 滚动高亮核心逻辑 (The "Essence") ---
-        const viewport = document.getElementById('viewport');
-        
-        function updateHighlight() {
-            // 视口中心线
-            const centerLine = viewport.scrollTop + (viewport.clientHeight / 2);
-            const items = document.querySelectorAll('.phi-item');
-
-            let closestItem = null;
-            let minDistance = Infinity;
-
-            items.forEach(item => {
-                // 获取元素中心点 (相对于列表容器)
-                const itemTop = item.offsetTop;
-                const itemHeight = item.clientHeight;
-                const itemCenter = itemTop + (itemHeight / 2);
-
-                // 计算距离中心的距离
-                const distance = Math.abs(centerLine - itemCenter);
-
-                // 1. 基础状态重置
-                item.classList.remove('active');
-                
-                // 2. 找到距离中心最近的元素
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    closestItem = item;
-                }
-
-                // 3. (可选) 根据距离产生视差或缩放效果 - 如果不想太花哨可以只保留 active
-                // Phigros 实际上列表是平滑移动的，但这里我们只做 active 处理
-            });
-
-            // 激活最近的元素 (Threshold: 比如距离中心 100px 以内)
-            if (closestItem && minDistance < 100) {
-                closestItem.classList.add('active');
-            }
-        }
-
-        // 监听滚动 (使用 requestAnimationFrame 节流)
-        let ticking = false;
-        viewport.addEventListener('scroll', () => {
-            if (!ticking) {
-                window.requestAnimationFrame(() => {
-                    updateHighlight();
-                    ticking = false;
-                });
-                ticking = true;
-            }
-        });
-
-        // 数字滚动动画
-        function animateValue(obj, start, end, duration) {
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                obj.innerHTML = (progress * (end - start) + start).toFixed(2);
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
-                }
+        // ========================================================
+        // 3. 核心交互：Intersection Observer (高亮逻辑)
+        // ========================================================
+        function initObserver() {
+            const options = {
+                root: document.querySelector('.scroll-container'),
+                rootMargin: '-45% 0px -45% 0px', // 核心！只关注屏幕中间 10% 的区域
+                threshold: 0
             };
-            window.requestAnimationFrame(step);
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    } else {
+                        entry.target.classList.remove('active');
+                    }
+                });
+            }, options);
+
+            // 监听所有卡片
+            document.querySelectorAll('.list-item-wrapper').forEach(card => {
+                observer.observe(card);
+            });
         }
 
-        // 初始化
-        renderPhigrosUI();
-        // 初始高亮一下
-        setTimeout(updateHighlight, 100);
-
+        // 启动
+        renderPhigrosDashboard();
     </script>
 </body>
 </html>
