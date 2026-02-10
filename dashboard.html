@@ -153,29 +153,75 @@
 
 
     <script>
-        // 在这里填入你的因子
+        // ========================================================
+        // 【数据配置区】
+        // method: 'sum' (加法，默认) | 'multiply' (乘法)
+        // ========================================================
         const data = {
-            // A. 工作
+            // A. 工作 (加法逻辑)
             work: {
                 title: "A. 工作 (价值产出)",
+                method: "sum", 
                 items: [
                     { name: "当前产出", formula: "暂无", value: 0 }
                 ]
             },
             
-            // B. 个人成长 (拆分为三个子项目)
+            // B. 个人成长 (乘法逻辑：所有因子连乘)
             growth: {
-                title: "B. 个人成长 (内核)",
+                title: "B. 个人成长 (内核复利)",
+                method: "multiply", // <--- 关键修改：启用乘法模式
                 items: [
-                    { name: "阅读速度", formula: "初始值", value: 1 },
-                    { name: "理解速度", formula: "初始值", value: 1 },
-                    { name: "输出能力", formula: "初始值", value: 1 }
+                    // --- 1. 阅读 ---
+                    { name: "[阅读] 阅读速度", formula: "字数/分", value: 1 },
+                    { name: "[阅读] 理解速度", formula: "转化率", value: 1 },
+                    { name: "[阅读] 每日时长", formula: "投入时间", value: 1 },
+                    { name: "[阅读] 输出时间比", formula: "输出/输入", value: 1 },
+                    { name: "[阅读] 选书能力", formula: "信噪比筛选", value: 1 },
+
+                    // --- 2. 价值 ---
+                    { name: "[价值] 自我探索", formula: "成果清晰度", value: 1 },
+                    { name: "[价值] 价值观迭代", formula: "明确程度", value: 1 },
+                    { name: "[价值] 目标分解", formula: "颗粒度", value: 1 },
+                    { name: "[价值] 选择时机", formula: "调用频率", value: 1 },
+                    { name: "[价值] 以理服己", formula: "逻辑自洽", value: 1 },
+                    { name: "[价值] 绝对执行", formula: "选择后行动", value: 1 },
+                    { name: "[价值] 周期复盘", formula: "纠偏机制", value: 1 },
+                    { name: "[价值] 倒推逻辑", formula: "由果推因", value: 1 },
+                    { name: "[价值] 积累效应", formula: "复利堆叠", value: 1 },
+                    { name: "[价值] 长期执行", formula: "耐力", value: 1 },
+
+                    // --- 3. 成长 ---
+                    { name: "[成长] 性格塑造", formula: "主动优化", value: 1 },
+                    { name: "[成长] 神经链接", formula: "构建与加强", value: 1 },
+                    { name: "[成长] 注意力", formula: "资源分配", value: 1 },
+                    { name: "[成长] 动机审查", formula: "元认知", value: 1 },
+                    { name: "[成长] 生产者视角", formula: "供需分析", value: 1 },
+                    { name: "[成长] 价值交换", formula: "非零和", value: 1 },
+                    { name: "[成长] 自信", formula: "成功体验", value: 1 },
+                    { name: "[成长] 标签思维", formula: "去标签化", value: 1 },
+                    { name: "[成长] 影响力", formula: "辐射范围", value: 1 },
+                    { name: "[成长] 底线试探", formula: "风险控制", value: 1 },
+                    { name: "[成长] 自给希望", formula: "心态韧性", value: 1 },
+                    { name: "[成长] 活在未来", formula: "长期主义", value: 1 },
+
+                    // --- 4. 大学 ---
+                    { name: "[大学] 尊重差异", formula: "包容度", value: 1 },
+                    { name: "[大学] 合作能力", formula: "协同效应", value: 1 },
+                    { name: "[大学] 资源思维", formula: "调用杠杆", value: 1 },
+                    { name: "[大学] 突破补齐", formula: "长板策略", value: 1 },
+                    { name: "[大学] 结识牛人", formula: "向上社交", value: 1 },
+                    { name: "[大学] 环境审视", formula: "场域意识", value: 1 },
+                    { name: "[大学] 圈子选择", formula: "筛选", value: 1 },
+                    { name: "[大学] 圈子加入", formula: "融入", value: 1 },
+                    { name: "[大学] 求助能力", formula: "向大佬提问", value: 1 }
                 ]
             },
 
-            // C. 财富创造
+            // C. 财富创造 (加法逻辑)
             wealth: {
                 title: "C. 财富创造 (资产)",
+                method: "sum",
                 items: [
                     { name: "基准状态", formula: "初始设定", value: 1 }
                 ]
@@ -183,20 +229,34 @@
         };
 
         // ========================================================
-        // 下面是自动渲染逻辑 (不需要动)
+        // 自动渲染与计算逻辑
         // ========================================================
         
         function renderDashboard() {
             const container = document.getElementById('dashboard-content');
             let grandTotal = 0;
+            
+            // 清空容器（防止重复渲染）
+            container.innerHTML = '';
 
             // 遍历三个板块
             for (const key in data) {
                 const section = data[key];
                 
-                // 1. 计算该板块总分
+                // 1. 根据 method 计算板块总分
                 let sectionTotal = 0;
-                section.items.forEach(item => sectionTotal += item.value);
+                
+                if (section.method === 'multiply') {
+                    // 乘法模式：初始值为 1，进行连乘
+                    sectionTotal = 1;
+                    section.items.forEach(item => sectionTotal *= item.value);
+                } else {
+                    // 加法模式：初始值为 0，进行累加 (默认)
+                    sectionTotal = 0;
+                    section.items.forEach(item => sectionTotal += item.value);
+                }
+
+                // 累加到大总分 (各板块之间通常是加法关系)
                 grandTotal += sectionTotal;
 
                 // 2. 生成 HTML
@@ -204,7 +264,7 @@
                     <div class="section">
                         <div class="section-header">
                             <span class="section-title">${section.title}</span>
-                            <span class="section-total">Sum: ${sectionTotal.toFixed(2)}</span>
+                            <span class="section-total">Score: ${sectionTotal.toFixed(2)}</span>
                         </div>
                         <div class="card-list">
                             ${section.items.map(item => `
