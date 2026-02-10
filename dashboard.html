@@ -155,10 +155,12 @@
     <script>
         // ========================================================
         // 【数据配置区】
-        // method: 'sum' (加法，默认) | 'multiply' (乘法)
+        // 结构支持：
+        // 1. flat (扁平模式): items: [...]
+        // 2. nested (嵌套模式): subSections: [...]
         // ========================================================
         const data = {
-            // A. 工作 (加法逻辑)
+            // A. 工作 (扁平结构，加法)
             work: {
                 title: "A. 工作 (价值产出)",
                 method: "sum", 
@@ -167,58 +169,72 @@
                 ]
             },
             
-            // B. 个人成长 (乘法逻辑：所有因子连乘)
+            // B. 个人成长 (嵌套结构，乘法)
             growth: {
                 title: "B. 个人成长 (内核复利)",
-                method: "multiply", // <--- 关键修改：启用乘法模式
-                items: [
-                    // --- 1. 阅读 ---
-                    { name: "[阅读] 阅读速度", formula: "字数/分", value: 1 },
-                    { name: "[阅读] 理解速度", formula: "转化率", value: 1 },
-                    { name: "[阅读] 每日时长", formula: "投入时间", value: 1 },
-                    { name: "[阅读] 输出时间比", formula: "输出/输入", value: 1 },
-                    { name: "[阅读] 选书能力", formula: "信噪比筛选", value: 1 },
-
-                    // --- 2. 价值 ---
-                    { name: "[价值] 自我探索", formula: "成果清晰度", value: 1 },
-                    { name: "[价值] 价值观迭代", formula: "明确程度", value: 1 },
-                    { name: "[价值] 目标分解", formula: "颗粒度", value: 1 },
-                    { name: "[价值] 选择时机", formula: "调用频率", value: 1 },
-                    { name: "[价值] 以理服己", formula: "逻辑自洽", value: 1 },
-                    { name: "[价值] 绝对执行", formula: "选择后行动", value: 1 },
-                    { name: "[价值] 周期复盘", formula: "纠偏机制", value: 1 },
-                    { name: "[价值] 倒推逻辑", formula: "由果推因", value: 1 },
-                    { name: "[价值] 积累效应", formula: "复利堆叠", value: 1 },
-                    { name: "[价值] 长期执行", formula: "耐力", value: 1 },
-
-                    // --- 3. 成长 ---
-                    { name: "[成长] 性格塑造", formula: "主动优化", value: 1 },
-                    { name: "[成长] 神经链接", formula: "构建与加强", value: 1 },
-                    { name: "[成长] 注意力", formula: "资源分配", value: 1 },
-                    { name: "[成长] 动机审查", formula: "元认知", value: 1 },
-                    { name: "[成长] 生产者视角", formula: "供需分析", value: 1 },
-                    { name: "[成长] 价值交换", formula: "非零和", value: 1 },
-                    { name: "[成长] 自信", formula: "成功体验", value: 1 },
-                    { name: "[成长] 标签思维", formula: "去标签化", value: 1 },
-                    { name: "[成长] 影响力", formula: "辐射范围", value: 1 },
-                    { name: "[成长] 底线试探", formula: "风险控制", value: 1 },
-                    { name: "[成长] 自给希望", formula: "心态韧性", value: 1 },
-                    { name: "[成长] 活在未来", formula: "长期主义", value: 1 },
-
-                    // --- 4. 大学 ---
-                    { name: "[大学] 尊重差异", formula: "包容度", value: 1 },
-                    { name: "[大学] 合作能力", formula: "协同效应", value: 1 },
-                    { name: "[大学] 资源思维", formula: "调用杠杆", value: 1 },
-                    { name: "[大学] 突破补齐", formula: "长板策略", value: 1 },
-                    { name: "[大学] 结识牛人", formula: "向上社交", value: 1 },
-                    { name: "[大学] 环境审视", formula: "场域意识", value: 1 },
-                    { name: "[大学] 圈子选择", formula: "筛选", value: 1 },
-                    { name: "[大学] 圈子加入", formula: "融入", value: 1 },
-                    { name: "[大学] 求助能力", formula: "向大佬提问", value: 1 }
+                method: "multiply", 
+                // 这里使用 subSections 来分组
+                subSections: [
+                    {
+                        title: "1. 阅读体系",
+                        items: [
+                            { name: "阅读速度", formula: "字数/分", value: 1 },
+                            { name: "理解速度", formula: "转化率", value: 1 },
+                            { name: "每日时长", formula: "投入时间", value: 1 },
+                            { name: "输出时间比", formula: "输出/输入", value: 1 },
+                            { name: "书籍筛选", formula: "信噪比", value: 1 }
+                        ]
+                    },
+                    {
+                        title: "2. 价值体系",
+                        items: [
+                            { name: "自我探索", formula: "成果清晰度", value: 1 },
+                            { name: "价值观迭代", formula: "明确程度", value: 1 },
+                            { name: "目标分解", formula: "颗粒度", value: 1 },
+                            { name: "选择时机", formula: "调用频率", value: 1 },
+                            { name: "以理服己", formula: "逻辑自洽", value: 1 },
+                            { name: "绝对执行", formula: "选择后行动", value: 1 },
+                            { name: "周期复盘", formula: "纠偏机制", value: 1 },
+                            { name: "倒推逻辑", formula: "由果推因", value: 1 },
+                            { name: "积累效应", formula: "复利堆叠", value: 1 },
+                            { name: "长期执行", formula: "耐力", value: 1 }
+                        ]
+                    },
+                    {
+                        title: "3. 成长心智",
+                        items: [
+                            { name: "性格塑造", formula: "主动优化", value: 1 },
+                            { name: "神经链接", formula: "构建与加强", value: 1 },
+                            { name: "注意力", formula: "资源分配", value: 1 },
+                            { name: "动机审查", formula: "元认知", value: 1 },
+                            { name: "生产者视角", formula: "供需分析", value: 1 },
+                            { name: "价值交换", formula: "非零和", value: 1 },
+                            { name: "自信", formula: "成功体验", value: 1 },
+                            { name: "标签思维", formula: "去标签化", value: 1 },
+                            { name: "影响力", formula: "辐射范围", value: 1 },
+                            { name: "底线试探", formula: "风险控制", value: 1 },
+                            { name: "自给希望", formula: "心态韧性", value: 1 },
+                            { name: "活在未来", formula: "长期主义", value: 1 }
+                        ]
+                    },
+                    {
+                        title: "4. 大学策略",
+                        items: [
+                            { name: "尊重差异", formula: "包容度", value: 1 },
+                            { name: "合作能力", formula: "协同效应", value: 1 },
+                            { name: "资源思维", formula: "调用杠杆", value: 1 },
+                            { name: "突破补齐", formula: "长板策略", value: 1 },
+                            { name: "结识牛人", formula: "向上社交", value: 1 },
+                            { name: "环境审视", formula: "场域意识", value: 1 },
+                            { name: "圈子选择", formula: "筛选", value: 1 },
+                            { name: "圈子加入", formula: "融入", value: 1 },
+                            { name: "求助能力", formula: "向大佬提问", value: 1 }
+                        ]
+                    }
                 ]
             },
 
-            // C. 财富创造 (加法逻辑)
+            // C. 财富创造 (扁平结构，加法)
             wealth: {
                 title: "C. 财富创造 (资产)",
                 method: "sum",
@@ -229,43 +245,69 @@
         };
 
         // ========================================================
-        // 自动渲染与计算逻辑
+        // 渲染引擎 (支持嵌套)
         // ========================================================
         
+        function calculateItems(items, method) {
+            if (!items || items.length === 0) return method === 'multiply' ? 1 : 0;
+            let total = method === 'multiply' ? 1 : 0;
+            items.forEach(item => {
+                if (method === 'multiply') total *= item.value;
+                else total += item.value;
+            });
+            return total;
+        }
+
         function renderDashboard() {
             const container = document.getElementById('dashboard-content');
             let grandTotal = 0;
-            
-            // 清空容器（防止重复渲染）
             container.innerHTML = '';
 
-            // 遍历三个板块
             for (const key in data) {
                 const section = data[key];
-                
-                // 1. 根据 method 计算板块总分
                 let sectionTotal = 0;
-                
-                if (section.method === 'multiply') {
-                    // 乘法模式：初始值为 1，进行连乘
-                    sectionTotal = 1;
-                    section.items.forEach(item => sectionTotal *= item.value);
+                let contentHTML = '';
+
+                // 逻辑分支：处理嵌套 vs 扁平
+                if (section.subSections) {
+                    // --- 嵌套模式 (如成长板块) ---
+                    // 总分初始化：乘法模式初始为1，加法模式初始为0
+                    sectionTotal = section.method === 'multiply' ? 1 : 0;
+
+                    section.subSections.forEach(sub => {
+                        // 1. 算子版块分
+                        const subTotal = calculateItems(sub.items, section.method);
+                        
+                        // 2. 算大板块总分
+                        if (section.method === 'multiply') sectionTotal *= subTotal;
+                        else sectionTotal += subTotal;
+
+                        // 3. 生成子版块 HTML
+                        contentHTML += `
+                            <div style="margin-bottom: 20px;">
+                                <div style="display:flex; justify-content:space-between; margin-bottom:5px; padding:0 5px;">
+                                    <span style="font-size:0.75rem; color:var(--text-dim); font-weight:600;">${sub.title}</span>
+                                    <span style="font-size:0.75rem; color:var(--text-main); opacity:0.7;">Sub: ${subTotal.toFixed(2)}</span>
+                                </div>
+                                <div class="card-list">
+                                    ${sub.items.map(item => `
+                                        <div class="factor-card">
+                                            <div class="factor-name">${item.name}</div>
+                                            <div class="factor-right-group">
+                                                <div class="factor-formula">${item.formula}</div>
+                                                <div class="factor-value">${item.value}</div>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                    });
+
                 } else {
-                    // 加法模式：初始值为 0，进行累加 (默认)
-                    sectionTotal = 0;
-                    section.items.forEach(item => sectionTotal += item.value);
-                }
-
-                // 累加到大总分 (各板块之间通常是加法关系)
-                grandTotal += sectionTotal;
-
-                // 2. 生成 HTML
-                const sectionHTML = `
-                    <div class="section">
-                        <div class="section-header">
-                            <span class="section-title">${section.title}</span>
-                            <span class="section-total">Score: ${sectionTotal.toFixed(2)}</span>
-                        </div>
+                    // --- 扁平模式 (如工作/财富) ---
+                    sectionTotal = calculateItems(section.items, section.method);
+                    contentHTML = `
                         <div class="card-list">
                             ${section.items.map(item => `
                                 <div class="factor-card">
@@ -277,16 +319,28 @@
                                 </div>
                             `).join('')}
                         </div>
+                    `;
+                }
+
+                // 累加 Grand Total (各板块间通常相加)
+                grandTotal += sectionTotal;
+
+                // 渲染整个大板块
+                const sectionHTML = `
+                    <div class="section">
+                        <div class="section-header">
+                            <span class="section-title">${section.title}</span>
+                            <span class="section-total" style="color:var(--text-main); font-weight:bold;">Total: ${sectionTotal.toFixed(2)}</span>
+                        </div>
+                        ${contentHTML}
                     </div>
                 `;
                 container.innerHTML += sectionHTML;
             }
 
-            // 3. 更新顶部大总分
             document.getElementById('grand-total').innerText = grandTotal.toFixed(2);
         }
 
-        // 运行
         renderDashboard();
     </script>
 </body>
