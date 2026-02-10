@@ -2,351 +2,359 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Wedm_ Phigros Dashboard</title>
     <style>
         /* ====================
-           Phigros Style Theme
+           Phigros 风格核心样式
            ==================== */
         :root {
-            --bg-color: #050505;          /* 极夜黑 */
-            --card-bg: rgba(255, 255, 255, 0.08); /* 半透明玻璃 */
-            --card-border: rgba(255, 255, 255, 0.2);
-            --accent-cyan: #62dcd2;       /* Phigros 经典青 */
-            --accent-gold: #ffcc00;       /* 评分金 */
+            --bg-color: #000000;
+            --item-bg: rgba(255, 255, 255, 0.05);
+            --item-bg-active: rgba(255, 255, 255, 0.9);
             --text-main: #ffffff;
-            --text-dim: rgba(255, 255, 255, 0.5);
-            
-            --skew-angle: -15deg;         /* 核心斜角 */
-            --skew-fix: 15deg;            /* 文字回正 */
+            --text-sub: rgba(255, 255, 255, 0.5);
+            --text-active: #000000;
+            --accent-color: #62e0ff; /* 典型的 Phigros 蓝/青 */
+            --accent-glow: rgba(98, 224, 255, 0.6);
+            --skew-angle: -15deg;
+            --unskew-angle: 15deg;
         }
 
         body {
-            font-family: "Eurostile", "Michroma", "Segoe UI", Roboto, sans-serif; /* 科技感字体优先 */
-            background: linear-gradient(135deg, #0a0a10 0%, #151520 100%);
+            font-family: "Exo 2", "Eurostile", -apple-system, sans-serif; /* 科技感字体优先 */
+            background-color: var(--bg-color);
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)),
+                url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070&auto=format&fit=crop'); /* 抽象背景 */
+            background-size: cover;
             background-attachment: fixed;
+            background-position: center;
             color: var(--text-main);
-            padding: 20px;
             margin: 0;
-            max-width: 650px; /* 稍微宽一点适应斜切 */
-            margin-left: auto;
-            margin-right: auto;
-            overflow-x: hidden; /* 防止斜切超出屏幕 */
+            height: 100vh;
+            overflow: hidden; /* 禁止 body 滚动，使用内部容器 */
         }
 
-        /* 顶部总分展示区 - 模仿结算界面 */
-        .header-container {
-            text-align: right; /* Phigros 风格经常右对齐 */
-            margin-bottom: 50px;
-            padding-right: 40px;
-            position: relative;
-        }
-
-        .header-label {
-            font-size: 0.9rem;
-            color: var(--accent-cyan);
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            font-weight: 700;
-            text-shadow: 0 0 10px rgba(98, 220, 210, 0.5);
-            transform: skewX(var(--skew-angle));
-            display: inline-block;
-        }
-
-        .total-score {
-            font-size: 5.5rem;
-            font-weight: 900;
-            color: #fff;
-            line-height: 0.9;
-            font-family: 'Impact', sans-serif; /* 紧凑粗体 */
-            letter-spacing: -2px;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-            transform: skewX(var(--skew-angle));
-            margin-right: -10px;
-        }
-
-        /* 背景装饰线 */
-        .bg-line {
+        /* 顶部信息栏 (RKS 风格) */
+        .top-bar {
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            z-index: -1;
-            pointer-events: none;
-            background: 
-                linear-gradient(90deg, transparent 95%, rgba(255,255,255,0.03) 95%),
-                linear-gradient(0deg, transparent 95%, rgba(255,255,255,0.03) 95%);
-            background-size: 100px 100px;
-            transform: perspective(500px) rotateX(20deg);
-        }
-
-        /* ====================
-           大板块容器
-           ==================== */
-        .section {
-            margin-bottom: 50px;
-            position: relative;
-        }
-
-        /* 装饰性侧边条 */
-        .section::before {
-            content: '';
-            position: absolute;
-            left: -10px;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: linear-gradient(to bottom, var(--accent-cyan), transparent);
-            transform: skewX(var(--skew-angle));
-            opacity: 0.3;
-        }
-
-        .section-header {
+            top: 20px;
+            right: 0;
+            width: 100%;
+            height: 80px;
+            z-index: 100;
+            pointer-events: none; /* 让点击穿透 */
             display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 20px;
-            padding: 0 20px;
-            transform: skewX(var(--skew-angle)); /* 整体斜切 */
+            justify-content: flex-end;
+            padding-right: 20px;
         }
 
-        .section-title {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: #fff;
-            font-style: italic; /* 更加动感 */
-            text-shadow: 2px 2px 0px rgba(0,0,0,0.5);
-        }
-
-        .section-total {
-            font-size: 1.2rem;
-            color: var(--accent-cyan);
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-        }
-
-        /* 子标题 */
-        .subsection-header {
-            margin-top: 25px;
-            margin-bottom: 10px;
-            padding-left: 20px;
+        .rks-plate {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 5px 30px;
             transform: skewX(var(--skew-angle));
-        }
-        
-        .subsection-title {
-            font-size: 0.85rem;
-            color: var(--text-dim);
-            letter-spacing: 2px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 2px;
-            display: inline-block;
-        }
-
-        /* ====================
-           卡片列表 (核心 Phigros 样式)
-           ==================== */
-        .card-list {
             display: flex;
             flex-direction: column;
-            gap: 12px; /* 卡片间距 */
-            padding: 10px;
+            align-items: flex-end;
+            border-right: 4px solid var(--accent-color);
+            box-shadow: 0 0 15px var(--accent-glow);
         }
 
-        .factor-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            /* 核心：平行四边形 */
-            transform: skewX(var(--skew-angle));
-            padding: 15px 30px;
+        .rks-label {
+            transform: skewX(var(--unskew-angle));
+            font-size: 0.7rem;
+            color: var(--accent-color);
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .rks-value {
+            transform: skewX(var(--unskew-angle));
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+            font-family: monospace; /* 数字等宽 */
+        }
+
+        /* 滚动列表容器 */
+        .scroll-viewport {
+            height: 100vh;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            padding-top: 50vh;    /* 留出空间让第一个元素能到中间 */
+            padding-bottom: 50vh; /* 留出空间让最后一个元素能到中间 */
+            scroll-behavior: smooth;
+            /* 隐藏滚动条 */
+            -ms-overflow-style: none;  
+            scrollbar-width: none;  
+        }
+        .scroll-viewport::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* 列表内容包裹 */
+        .list-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px; /* 卡片间距 */
+            padding-left: 20px; /* 视觉补偿 skew 带来的偏移 */
+        }
+
+        /* ==============
+           分割线 / 章节头 (Chapter)
+           ============== */
+        .chapter-header {
+            width: 100%;
+            max-width: 600px;
+            text-align: left;
+            margin-top: 40px;
+            margin-bottom: 10px;
+            padding-left: 10%;
+            position: relative;
+            opacity: 0.8;
+        }
+
+        .chapter-title {
+            font-size: 1.5rem;
+            font-weight: 900;
+            font-style: italic;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 2px solid var(--accent-color);
+            display: inline-block;
+            padding-bottom: 5px;
+            text-shadow: 0 0 5px var(--accent-color);
+        }
+        
+        .chapter-score {
+            font-size: 1rem;
+            color: var(--accent-color);
+            margin-left: 10px;
+            font-weight: normal;
+        }
+
+        /* ==============
+           条目卡片 (Song Item)
+           ============== */
+        .phi-item {
+            width: 90%;
+            max-width: 500px;
+            height: 70px; /* 默认高度 */
+            background: var(--item-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            transform: skewX(var(--skew-angle)) scale(0.95); /* 默认微缩 */
             display: flex;
             align-items: center;
             justify-content: space-between;
+            padding: 0 30px;
+            transition: all 0.1s linear; /* 极速响应滚动 */
             position: relative;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            /* 玻璃毛玻璃效果 */
-            backdrop-filter: blur(5px); 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            overflow: hidden; /* 必须，为了流光效果 */
+            cursor: pointer;
+            backdrop-filter: blur(5px);
         }
 
-        /* 选中/悬停态：高亮、缩放、辉光 */
-        .factor-card:hover {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: var(--accent-cyan);
-            transform: skewX(var(--skew-angle)) scale(1.03) translateX(10px); /* 动感位移 */
-            box-shadow: 0 0 20px rgba(98, 220, 210, 0.4);
-            z-index: 10;
-        }
-
-        /* 左侧装饰块 (难度条的感觉) */
-        .factor-card::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 8px;
-            background: var(--text-dim);
-            transition: background 0.3s;
-        }
-        .factor-card:hover::after {
-            background: var(--accent-cyan);
-            box-shadow: 0 0 10px var(--accent-cyan);
-        }
-
-        /* 内容修正：反向斜切，让文字看起来是正的 */
-        .card-content-wrapper {
-            transform: skewX(var(--skew-fix)); 
+        /* 内部内容反向纠正 skew */
+        .phi-content {
+            transform: skewX(var(--unskew-angle));
             width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .factor-name {
-            font-size: 1.1rem;
-            color: #fff;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-
-        .factor-right-group {
-            text-align: right;
+        /* 左侧信息 */
+        .info-left {
             display: flex;
-            flex-direction: column; /* 上下排列，信息层叠 */
-            align-items: flex-end;
+            flex-direction: column;
         }
 
-        .factor-value {
-            font-size: 1.4rem;
-            font-weight: 800;
-            color: #fff;
-            line-height: 1;
-        }
-        
-        /* 动态高亮数值 */
-        .factor-card:hover .factor-value {
-            color: var(--accent-gold);
-            text-shadow: 0 0 8px var(--accent-gold);
+        .item-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: 1px;
+            transition: color 0.1s;
         }
 
-        .factor-formula {
+        .item-formula {
             font-size: 0.65rem;
-            color: var(--text-dim);
+            color: var(--text-sub);
             font-family: monospace;
             margin-top: 2px;
-            opacity: 0.7;
+            text-transform: uppercase;
         }
 
-        /* 隐藏滚动条但保留功能 */
-        ::-webkit-scrollbar {
-            width: 0px;
-            background: transparent;
+        /* 右侧分数 */
+        .item-score {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--text-main);
+            opacity: 0.7;
+            font-family: monospace;
+            transition: all 0.1s;
+        }
+
+        /* ==============
+           高亮激活态 (Active State)
+           ============== */
+        .phi-item.active {
+            background: var(--item-bg-active); /* 变白 */
+            transform: skewX(var(--skew-angle)) scale(1.1); /* 放大 */
+            border: 2px solid #fff;
+            box-shadow: 
+                0 0 20px rgba(255,255,255,0.3),
+                inset 0 0 20px rgba(255,255,255,0.3);
+            z-index: 10;
+        }
+
+        .phi-item.active .item-name {
+            color: var(--text-active); /* 变黑 */
+            font-size: 1.3rem;
+        }
+
+        .phi-item.active .item-formula {
+            color: rgba(0,0,0,0.6); /* 变深灰 */
+        }
+
+        .phi-item.active .item-score {
+            color: var(--text-active); /* 变黑 */
+            opacity: 1;
+            font-size: 1.8rem;
+        }
+
+        /* 装饰用的左侧条 (Diff Color) */
+        .phi-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 8px;
+            background: var(--accent-color);
+            opacity: 0.3;
+            transition: opacity 0.1s;
+        }
+        
+        .phi-item.active::before {
+            opacity: 1;
+            box-shadow: 0 0 10px var(--accent-color);
         }
 
     </style>
 </head>
 <body>
 
-    <div class="bg-line"></div>
-
-    <div class="header-container">
-        <div class="header-label">Efficiency Ranking</div>
-        <br>
-        <div id="grand-total" class="total-score">0000000</div>
+    <div class="top-bar">
+        <div class="rks-plate">
+            <div class="rks-label">TOTAL EFFICIENCY</div>
+            <div class="rks-value" id="rks-display">00.00</div>
+        </div>
     </div>
 
-    <div id="dashboard-content"></div>
-
+    <div class="scroll-viewport" id="viewport">
+        <div class="list-content" id="list-container">
+            </div>
+    </div>
 
     <script>
         // ========================================================
         // 【数据配置区】
-        // 这里的数据保持不变，界面会自动变成 Phigros 风格
+        // 保持原有的数据结构，只需要改这里
         // ========================================================
         const data = {
             work: {
-                title: "A. WORK",
+                title: "Chapter I. WORK",
                 method: "sum", 
                 items: [
-                    { name: "Current State", formula: "", value: 0 }
+                    { name: "Current Output", formula: "Base Level", value: 0 }
                 ]
             },
             
             growth: {
-                title: "B. GROWTH",
+                title: "Chapter II. GROWTH",
                 method: "multiply", 
                 subSections: [
                     {
-                        title: "1. Reading",
+                        title: "System: Reading",
                         items: [
-                            { name: "Reading Speed", formula: "", value: 1 },
-                            { name: "Understanding", formula: "", value: 1 },
-                            { name: "Daily Duration", formula: "", value: 1 },
-                            { name: "Output Ratio", formula: "", value: 1 },
-                            { name: "Book Filter", formula: "", value: 1 }
+                            { name: "Speed", formula: "WPM", value: 1 },
+                            { name: "Understanding", formula: "Conversion", value: 1 },
+                            { name: "Duration", formula: "Time/Day", value: 1 },
+                            { name: "Output Ratio", formula: "Out/In", value: 1 },
+                            { name: "Selection", formula: "Quality", value: 1 }
                         ]
                     },
                     {
-                        title: "2. Value System",
+                        title: "System: Values",
                         items: [
-                            { name: "Self Explore", formula: "", value: 1 },
-                            { name: "Values Iter", formula: "", value: 1 },
-                            { name: "Goal Break", formula: "", value: 1 },
-                            { name: "Choice Timing", formula: "", value: 1 },
-                            { name: "Self Logic", formula: "", value: 1 },
-                            { name: "Execution", formula: "", value: 1 },
-                            { name: "Review Cycle", formula: "", value: 1 },
-                            { name: "Reverse Logic", formula: "", value: 1 },
-                            { name: "Accumulation", formula: "", value: 1 },
-                            { name: "Endurance", formula: "", value: 1 }
+                            { name: "Exploration", formula: "Clarity", value: 1 },
+                            { name: "Iteration", formula: "Update", value: 1 },
+                            { name: "Breakdown", formula: "Granularity", value: 1 },
+                            { name: "Timing", formula: "Frequency", value: 1 },
+                            { name: "Logic", formula: "Self-Consistent", value: 1 },
+                            { name: "Execution", formula: "Action", value: 1 },
+                            { name: "Review", formula: "Correction", value: 1 },
+                            { name: "Deduction", formula: "Causality", value: 1 },
+                            { name: "Compounding", formula: "Stacking", value: 1 },
+                            { name: "Endurance", formula: "Long-term", value: 1 }
                         ]
                     },
                     {
-                        title: "3. Growth Mind",
+                        title: "System: Mindset",
                         items: [
-                            { name: "Character", formula: "", value: 1 },
-                            { name: "Neural Links", formula: "", value: 1 },
-                            { name: "Attention", formula: "", value: 1 },
-                            { name: "Motivation", formula: "", value: 1 },
-                            { name: "Producer View", formula: "", value: 1 },
-                            { name: "Value Exch", formula: "", value: 1 },
-                            { name: "Confidence", formula: "", value: 1 },
-                            { name: "De-Label", formula: "", value: 1 },
-                            { name: "Influence", formula: "", value: 1 },
-                            { name: "Risk Test", formula: "", value: 1 },
-                            { name: "Self Hope", formula: "", value: 1 },
-                            { name: "Live Future", formula: "", value: 1 }
+                            { name: "Character", formula: "Optimization", value: 1 },
+                            { name: "Neural Link", formula: "Build", value: 1 },
+                            { name: "Attention", formula: "Resource", value: 1 },
+                            { name: "Metacognition", formula: "Review", value: 1 },
+                            { name: "Producer View", formula: "Supply/Demand", value: 1 },
+                            { name: "Exchange", formula: "Non-Zero Sum", value: 1 },
+                            { name: "Confidence", formula: "Success Rate", value: 1 },
+                            { name: "Unlabeling", formula: "Identity", value: 1 },
+                            { name: "Influence", formula: "Radius", value: 1 },
+                            { name: "Risk Control", formula: "Bottom Line", value: 1 },
+                            { name: "Resilience", formula: "Hope", value: 1 },
+                            { name: "Futurism", formula: "Long-term", value: 1 }
                         ]
                     },
                     {
-                        title: "4. University",
+                        title: "System: Strategy",
                         items: [
-                            { name: "Difference", formula: "", value: 1 },
-                            { name: "Cooperation", formula: "", value: 1 },
-                            { name: "Resources", formula: "", value: 1 },
-                            { name: "Breakthrough", formula: "", value: 1 },
-                            { name: "Networking", formula: "", value: 1 },
-                            { name: "Env Audit", formula: "", value: 1 },
-                            { name: "Circle Filter", formula: "", value: 1 },
-                            { name: "Integration", formula: "", value: 1 },
-                            { name: "Asking Help", formula: "", value: 1 }
+                            { name: "Diversity", formula: "Tolerance", value: 1 },
+                            { name: "Cooperation", formula: "Synergy", value: 1 },
+                            { name: "Leverage", formula: "Resource", value: 1 },
+                            { name: "Breakthrough", formula: "Strength", value: 1 },
+                            { name: "Networking", formula: "Upward", value: 1 },
+                            { name: "Environment", formula: "Field", value: 1 },
+                            { name: "Filtering", formula: "Circle", value: 1 },
+                            { name: "Integration", formula: "Join", value: 1 },
+                            { name: "Asking", formula: "Help", value: 1 }
                         ]
                     }
                 ]
             },
 
             wealth: {
-                title: "C. WEALTH",
+                title: "Chapter III. WEALTH",
                 method: "sum",
                 items: [
-                    { name: "Baseline", formula: "", value: 1 }
+                    { name: "Baseline", formula: "Initial", value: 1 }
                 ]
             }
         };
 
         // ========================================================
-        // 渲染引擎 (适配 Phigros 结构)
+        // 渲染与交互引擎
         // ========================================================
-        
+
+        const listContainer = document.getElementById('list-container');
+        let grandTotal = 0;
+
+        // --- 计算工具 ---
         function calculateItems(items, method) {
             if (!items || items.length === 0) return method === 'multiply' ? 1 : 0;
             let total = method === 'multiply' ? 1 : 0;
@@ -357,86 +365,143 @@
             return total;
         }
 
-        function renderDashboard() {
-            const container = document.getElementById('dashboard-content');
-            let grandTotal = 0;
-            container.innerHTML = '';
+        // --- 1. 渲染 DOM 结构 ---
+        function renderPhigrosUI() {
+            grandTotal = 0;
+            listContainer.innerHTML = ''; // Clear
 
             for (const key in data) {
                 const section = data[key];
                 let sectionTotal = 0;
-                let contentHTML = '';
 
+                // 计算分数
                 if (section.subSections) {
                     sectionTotal = section.method === 'multiply' ? 1 : 0;
-
                     section.subSections.forEach(sub => {
                         const subTotal = calculateItems(sub.items, section.method);
                         if (section.method === 'multiply') sectionTotal *= subTotal;
                         else sectionTotal += subTotal;
-
-                        contentHTML += `
-                            <div style="margin-bottom: 25px;">
-                                <div class="subsection-header">
-                                    <span class="subsection-title">${sub.title}</span>
-                                    <span class="subsection-title" style="color:var(--accent-cyan)">RANK: ${subTotal.toFixed(2)}</span>
-                                </div>
-                                <div class="card-list">
-                                    ${sub.items.map(item => `
-                                        <div class="factor-card">
-                                            <div class="card-content-wrapper">
-                                                <div class="factor-name">${item.name}</div>
-                                                <div class="factor-right-group">
-                                                    <div class="factor-value">${item.value}</div>
-                                                    <div class="factor-formula">${item.formula || 'No Mod'}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                        `;
                     });
-
                 } else {
                     sectionTotal = calculateItems(section.items, section.method);
-                    contentHTML = `
-                        <div class="card-list">
-                            ${section.items.map(item => `
-                                <div class="factor-card">
-                                    <div class="card-content-wrapper">
-                                        <div class="factor-name">${item.name}</div>
-                                        <div class="factor-right-group">
-                                            <div class="factor-value">${item.value}</div>
-                                            <div class="factor-formula">${item.formula || 'No Mod'}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
                 }
-
                 grandTotal += sectionTotal;
 
-                const sectionHTML = `
-                    <div class="section">
-                        <div class="section-header">
-                            <span class="section-title">${section.title}</span>
-                            <span class="section-total">TOTAL ${sectionTotal.toFixed(2)}</span>
-                        </div>
-                        ${contentHTML}
-                    </div>
+                // 渲染大标题 (Chapter Header)
+                const header = document.createElement('div');
+                header.className = 'chapter-header';
+                header.innerHTML = `
+                    <div class="chapter-title">${section.title}</div>
+                    <span class="chapter-score">Rank: ${sectionTotal.toFixed(2)}</span>
                 `;
-                container.innerHTML += sectionHTML;
+                listContainer.appendChild(header);
+
+                // 渲染列表项
+                if (section.subSections) {
+                    section.subSections.forEach(sub => {
+                        // 子标题作为分割线
+                        const subHeader = document.createElement('div');
+                        subHeader.style.cssText = "color:rgba(255,255,255,0.4); margin-top:15px; font-size:0.8rem; transform:skewX(-15deg); padding-left:20px;";
+                        subHeader.innerText = `// ${sub.title}`;
+                        listContainer.appendChild(subHeader);
+
+                        sub.items.forEach(item => createItemCard(item));
+                    });
+                } else {
+                    section.items.forEach(item => createItemCard(item));
+                }
             }
 
-            // 总分显示为 7 位数格式 (0000000)
-            const formattedTotal = grandTotal.toFixed(2).padStart(7, '0');
-            document.getElementById('grand-total').innerText = formattedTotal;
+            // 更新 RKS
+            const rksDisplay = document.getElementById('rks-display');
+            animateValue(rksDisplay, 0, grandTotal, 1000);
         }
 
-        renderDashboard();
+        function createItemCard(item) {
+            const el = document.createElement('div');
+            el.className = 'phi-item';
+            el.innerHTML = `
+                <div class="phi-content">
+                    <div class="info-left">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-formula">${item.formula || 'UNNAMED'}</div>
+                    </div>
+                    <div class="item-score">${item.value}</div>
+                </div>
+            `;
+            listContainer.appendChild(el);
+        }
+
+        // --- 2. 滚动高亮核心逻辑 (The "Essence") ---
+        const viewport = document.getElementById('viewport');
+        
+        function updateHighlight() {
+            // 视口中心线
+            const centerLine = viewport.scrollTop + (viewport.clientHeight / 2);
+            const items = document.querySelectorAll('.phi-item');
+
+            let closestItem = null;
+            let minDistance = Infinity;
+
+            items.forEach(item => {
+                // 获取元素中心点 (相对于列表容器)
+                const itemTop = item.offsetTop;
+                const itemHeight = item.clientHeight;
+                const itemCenter = itemTop + (itemHeight / 2);
+
+                // 计算距离中心的距离
+                const distance = Math.abs(centerLine - itemCenter);
+
+                // 1. 基础状态重置
+                item.classList.remove('active');
+                
+                // 2. 找到距离中心最近的元素
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestItem = item;
+                }
+
+                // 3. (可选) 根据距离产生视差或缩放效果 - 如果不想太花哨可以只保留 active
+                // Phigros 实际上列表是平滑移动的，但这里我们只做 active 处理
+            });
+
+            // 激活最近的元素 (Threshold: 比如距离中心 100px 以内)
+            if (closestItem && minDistance < 100) {
+                closestItem.classList.add('active');
+            }
+        }
+
+        // 监听滚动 (使用 requestAnimationFrame 节流)
+        let ticking = false;
+        viewport.addEventListener('scroll', () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    updateHighlight();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        });
+
+        // 数字滚动动画
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = (progress * (end - start) + start).toFixed(2);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // 初始化
+        renderPhigrosUI();
+        // 初始高亮一下
+        setTimeout(updateHighlight, 100);
+
     </script>
 </body>
 </html>
