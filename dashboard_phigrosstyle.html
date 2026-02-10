@@ -6,50 +6,73 @@
     <title>Wedm_ Phigros Dashboard</title>
     <style>
         /* ====================
-           Phigros Style System
+           Phigros Style Config
            ==================== */
         :root {
-            --bg-color: #0a0a0c;      /* 深空黑 */
-            --card-bg: rgba(255, 255, 255, 0.08); /* 半透明磨砂 */
+            --bg-color: #050505;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
             --text-main: #ffffff;
             --text-dim: #a0a0a0;
-            --phi-blue: #00e5ff;      /* 标志性青蓝 */
-            --phi-gold: #ffcc00;      /* 标志性金色 */
-            --phi-skew: -15deg;       /* 核心斜率 */
-            --phi-unskew: 15deg;      /* 反向修正 */
+            --accent-cyan: #00f0ff; /* 典型的 Phigros 蓝 */
+            --accent-gold: #ffcc00; /* 高分金 */
+            --skew-angle: -15deg;   /* 核心斜角 */
+            --unskew-angle: 15deg;
         }
 
         body {
-            font-family: "Exo 2", "Eurostile", -apple-system, sans-serif; /* 科技感字体 */
+            font-family: "Exo 2", "Segoe UI", Roboto, Helvetica, Arial, sans-serif; /* 科技感字体 */
             background-color: var(--bg-color);
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(0, 229, 255, 0.1) 0%, transparent 20%),
-                radial-gradient(circle at 90% 80%, rgba(255, 204, 0, 0.08) 0%, transparent 20%);
+                linear-gradient(45deg, #111 25%, transparent 25%, transparent 75%, #111 75%, #111),
+                linear-gradient(45deg, #111 25%, transparent 25%, transparent 75%, #111 75%, #111);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px; /* 碳纤维/网格纹理 */
             color: var(--text-main);
             padding: 20px;
             margin: 0;
-            max-width: 650px; /* 稍微宽一点以容纳斜切 */
+            overflow-x: hidden; /* 防止斜角导致滚动条 */
+            max-width: 600px;
             margin-left: auto;
             margin-right: auto;
-            overflow-x: hidden; /* 防止斜切超出屏幕 */
         }
 
-        /* 顶部 RKS (Ranking Score) 风格总分 */
+        /* 动画：入场滑入 */
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px) skewX(var(--skew-angle)); }
+            to { opacity: 1; transform: translateX(0) skewX(var(--skew-angle)); }
+        }
+
+        /* ====================
+           顶部总分 (Ranking Score)
+           ==================== */
         .total-container {
-            text-align: right; /* Phigros 风格通常在右上或右侧 */
+            text-align: right; /* Phigros 结算通常偏右或居中 */
             margin-bottom: 50px;
             padding-right: 20px;
             position: relative;
         }
 
+        /* 装饰背景条 */
+        .total-bg {
+            position: absolute;
+            top: 10px;
+            right: -50px;
+            width: 300px;
+            height: 80px;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1));
+            transform: skewX(var(--skew-angle));
+            z-index: -1;
+        }
+
         .total-label {
             font-size: 0.9rem;
-            color: var(--phi-blue);
+            color: var(--accent-cyan);
             text-transform: uppercase;
-            letter-spacing: 3px;
-            text-shadow: 0 0 5px rgba(0, 229, 255, 0.6);
-            transform: skewX(var(--phi-skew));
-            display: inline-block;
+            letter-spacing: 4px;
+            margin-bottom: 0px;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
         }
 
         .total-score {
@@ -58,180 +81,194 @@
             color: #fff;
             line-height: 1;
             letter-spacing: -2px;
+            font-style: italic; /* 更加动感 */
             text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-            font-style: italic; /* 增加动感 */
-            margin-right: -10px;
         }
 
-        /* 大板块容器 */
+        /* ====================
+           大板块容器
+           ==================== */
         .section {
-            margin-bottom: 60px;
-            padding-left: 20px; /* 给左边斜切留空 */
+            margin-bottom: 40px;
         }
 
-        /* 大标题 (Chapter Title) */
-        .section-header {
-            display: flex;
-            align-items: center;
+        /* 板块标题栏 (斜条) */
+        .section-header-bar {
+            background: linear-gradient(90deg, rgba(255,255,255,0.1), transparent);
+            padding: 8px 20px;
+            transform: skewX(var(--skew-angle)); /* 平行四边形 */
+            border-left: 4px solid var(--text-main);
             margin-bottom: 20px;
-            border-bottom: 2px solid rgba(255,255,255,0.1);
-            padding-bottom: 10px;
+            margin-left: 10px; /* 视觉补偿 */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+        }
+
+        /* 内容反向修正，让文字直立 */
+        .header-content {
+            transform: skewX(var(--unskew-angle)); 
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            align-items: baseline;
         }
 
         .section-title {
-            font-size: 1.8rem;
+            font-size: 1.4rem;
             font-weight: 900;
-            color: var(--text-main);
+            color: #fff;
             text-transform: uppercase;
-            font-style: italic;
             letter-spacing: 1px;
-            margin-right: 15px;
-        }
-
-        .section-tag {
-            background: var(--phi-blue);
-            color: #000;
-            font-weight: bold;
-            font-size: 0.8rem;
-            padding: 2px 10px;
-            transform: skewX(var(--phi-skew));
-            box-shadow: 0 0 10px var(--phi-blue);
+            font-style: italic;
         }
 
         .section-total {
-            margin-left: auto;
             font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--phi-gold);
-            text-shadow: 0 0 10px rgba(255, 204, 0, 0.4);
+            color: var(--accent-cyan);
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
         }
 
-        /* 子标题 (Collection Title) */
+        /* 子分类标题 */
         .subsection-header {
+            margin-top: 25px;
+            margin-bottom: 10px;
+            padding-left: 20px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            padding-left: 10px;
-            border-left: 4px solid var(--text-dim); /* 左侧装饰线 */
-        }
-
-        .subsection-title {
-            font-size: 1rem;
-            color: var(--text-dim);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* ========== 核心：平行四边形列表 ========== */
-        .card-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px; /* 卡片间距 */
-        }
-
-        /* 外部容器：负责斜切背景 */
-        .phi-card {
-            position: relative;
-            background: var(--card-bg);
-            height: 60px;
-            width: 100%;
-            transform: skewX(var(--phi-skew)); /* 向左倾斜 */
-            border-left: 4px solid transparent; /* 左侧难度条占位 */
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            cursor: default;
-            /* 玻璃拟态边框 */
-            border-top: 1px solid rgba(255,255,255,0.1);
+            align-items: flex-end;
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
-        /* 悬停效果：金蓝辉光爆棚 */
-        .phi-card:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: skewX(var(--phi-skew)) translateX(10px); /* 悬停时稍微位移 */
-            box-shadow: 0 0 20px rgba(0, 229, 255, 0.4); /* 蓝色光晕 */
-            border-left-color: var(--phi-gold); /* 左侧亮起金色条 */
+        .subsection-title {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        /* ====================
+           卡片列表 (Song List Style)
+           ==================== */
+        .card-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px; /* 卡片间距 */
+            padding: 0 10px; /* 给斜角留出空间 */
+        }
+
+        .factor-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            
+            /* 核心形状 */
+            transform: skewX(var(--skew-angle));
+            border-left: 6px solid var(--text-dim); /* 难度条 */
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            
+            /* 玻璃质感边框 */
+            border-top: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(0,0,0,0.5);
+            
+            /* 动画 */
+            animation: slideIn 0.5s ease-out forwards;
+            opacity: 0; /* 动画初始状态 */
+        }
+        
+        /* 选中/悬停态 (模拟 Dynamic Highlighting) */
+        .factor-card:hover {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.15) 0%, rgba(0, 0, 0, 0) 100%);
+            border-left-color: var(--accent-cyan);
+            transform: skewX(var(--skew-angle)) scale(1.02) translateX(10px); /* 弹起效果 */
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
             z-index: 10;
         }
 
-        /* 内部容器：负责把文字正回来 */
-        .phi-content {
-            transform: skewX(var(--phi-unskew)); /* 反向修正文字 */
-            height: 100%;
+        /* 内部内容反向修正 */
+        .card-inner {
+            transform: skewX(var(--unskew-angle));
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            padding: 0 25px; /* 内部边距 */
+            align-items: center;
+            width: 100%;
         }
 
-        /* 装饰用的背景线条 */
-        .phi-bg-line {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.05) 50%, transparent 100%);
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .phi-card:hover .phi-bg-line {
-            opacity: 1;
-        }
-
-        /* 文字样式 */
-        .phi-name {
+        .factor-name {
             font-size: 1.1rem;
             color: #fff;
             font-weight: 600;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
             letter-spacing: 0.5px;
         }
 
-        .phi-right-group {
+        .factor-right-group {
             text-align: right;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
+            flex-direction: column; /* 分数在上，公式在下 */
+            align-items: flex-end;
         }
 
-        .phi-value {
+        .factor-value {
             font-size: 1.4rem;
-            font-weight: 800;
-            color: var(--phi-blue); /* 默认数值青色 */
+            font-weight: 700;
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif; /* 数字用等宽风格更好看 */
             line-height: 1;
         }
-        
-        /* 超过 1 的高分用金色 */
-        .phi-card[data-score="high"] .phi-value {
-            color: var(--phi-gold);
-            text-shadow: 0 0 8px rgba(255, 204, 0, 0.6);
+
+        /* 模拟 AP/FC 指示器 */
+        .value-indicator {
+            font-size: 0.6rem;
+            color: var(--accent-gold);
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-right: 5px;
+            opacity: 0; /* 默认隐藏，hover显示，或者根据分数显示 */
+        }
+        .factor-card:hover .value-indicator { opacity: 1; }
+
+        .factor-formula {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.4);
+            margin-top: 2px;
+            font-family: monospace;
         }
 
-        .phi-formula {
-            font-size: 0.65rem;
-            color: rgba(255,255,255,0.5);
-            font-family: monospace;
-            margin-top: 2px;
-        }
+        /* 针对不同板块的颜色条 (装饰) */
+        .section:nth-child(2) .factor-card { border-left-color: #ff4757; } /* A板块 红色 */
+        .section:nth-child(2) .factor-card:hover { border-left-color: #ff6b81; background: linear-gradient(135deg, rgba(255, 71, 87, 0.15) 0%, transparent 100%);}
+        
+        .section:nth-child(3) .factor-card { border-left-color: #2ed573; } /* B板块 绿色 */
+        .section:nth-child(3) .factor-card:hover { border-left-color: #7bed9f; background: linear-gradient(135deg, rgba(46, 213, 115, 0.15) 0%, transparent 100%);}
+        
+        .section:nth-child(4) .factor-card { border-left-color: #ffa502; } /* C板块 黄色 */
+        .section:nth-child(4) .factor-card:hover { border-left-color: #eccc68; background: linear-gradient(135deg, rgba(255, 165, 2, 0.15) 0%, transparent 100%);}
 
     </style>
 </head>
 <body>
 
     <div class="total-container">
-        <div class="total-label">Total Efficiency</div><br>
-        <span class="total-score" id="grand-total">0.00</span>
+        <div class="total-bg"></div>
+        <div class="total-label">PERFECT EFFICIENCY</div>
+        <div id="grand-total" class="total-score">0000000</div>
     </div>
 
     <div id="dashboard-content"></div>
 
-
     <script>
+        // ========================================================
+        // 【数据配置区】
+        // ========================================================
         const data = {
             // A. 工作
             work: {
-                title: "Chapter A. WORK",
+                title: "A. Work / Value",
                 method: "sum", 
                 items: [
                     { name: "当前产出", formula: "", value: 0 }
@@ -240,11 +277,11 @@
             
             // B. 个人成长
             growth: {
-                title: "Chapter B. GROWTH",
+                title: "B. Growth / Kernel",
                 method: "multiply", 
                 subSections: [
                     {
-                        title: "Collection I: Reading",
+                        title: "1. 阅读体系 / Reading",
                         items: [
                             { name: "阅读速度", formula: "", value: 1 },
                             { name: "理解速度", formula: "", value: 1 },
@@ -254,7 +291,7 @@
                         ]
                     },
                     {
-                        title: "Collection II: Value",
+                        title: "2. 价值体系 / Value",
                         items: [
                             { name: "自我探索", formula: "", value: 1 },
                             { name: "价值观迭代", formula: "", value: 1 },
@@ -269,7 +306,7 @@
                         ]
                     },
                     {
-                        title: "Collection III: Mindset",
+                        title: "3. 成长心智 / Mindset",
                         items: [
                             { name: "性格塑造", formula: "", value: 1 },
                             { name: "神经链接", formula: "", value: 1 },
@@ -286,7 +323,7 @@
                         ]
                     },
                     {
-                        title: "Collection IV: Strategy",
+                        title: "4. 大学策略 / University",
                         items: [
                             { name: "尊重差异", formula: "", value: 1 },
                             { name: "合作能力", formula: "", value: 1 },
@@ -304,7 +341,7 @@
 
             // C. 财富创造
             wealth: {
-                title: "Chapter C. WEALTH",
+                title: "C. Wealth / Asset",
                 method: "sum",
                 items: [
                     { name: "基准状态", formula: "", value: 1 }
@@ -313,7 +350,7 @@
         };
 
         // ========================================================
-        // Phigros 风格渲染引擎
+        // 渲染引擎
         // ========================================================
         
         function calculateItems(items, method) {
@@ -326,35 +363,22 @@
             return total;
         }
 
+        // 格式化数字，模拟分数显示 (保留两位小数)
+        function fmt(num) {
+            return num.toFixed(2);
+        }
+
         function renderDashboard() {
             const container = document.getElementById('dashboard-content');
             let grandTotal = 0;
             container.innerHTML = '';
 
+            let delayCounter = 0; // 用于动画延迟
+
             for (const key in data) {
                 const section = data[key];
                 let sectionTotal = 0;
                 let contentHTML = '';
-
-                // 辅助函数：生成卡片 HTML
-                const createCard = (item) => {
-                    // 判断分数是否高（大于1），用于高亮显示
-                    const isHigh = item.value > 1;
-                    const scoreAttr = isHigh ? 'data-score="high"' : '';
-                    
-                    return `
-                        <div class="phi-card" ${scoreAttr}>
-                            <div class="phi-bg-line"></div>
-                            <div class="phi-content">
-                                <div class="phi-name">${item.name}</div>
-                                <div class="phi-right-group">
-                                    <div class="phi-value">${item.value}</div>
-                                    ${item.formula ? `<div class="phi-formula">${item.formula}</div>` : ''}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                };
 
                 if (section.subSections) {
                     // --- 嵌套模式 ---
@@ -362,18 +386,32 @@
 
                     section.subSections.forEach(sub => {
                         const subTotal = calculateItems(sub.items, section.method);
-                        
                         if (section.method === 'multiply') sectionTotal *= subTotal;
                         else sectionTotal += subTotal;
 
                         contentHTML += `
-                            <div style="margin-bottom: 40px;">
+                            <div style="margin-bottom: 25px;">
                                 <div class="subsection-header">
                                     <span class="subsection-title">${sub.title}</span>
-                                    <span class="section-tag" style="background:rgba(255,255,255,0.1); color:#fff; font-weight:normal;">SUB: ${subTotal.toFixed(2)}</span>
+                                    <span class="subsection-title" style="color:var(--accent-cyan)">${fmt(subTotal)}</span>
                                 </div>
                                 <div class="card-list">
-                                    ${sub.items.map(item => createCard(item)).join('')}
+                                    ${sub.items.map(item => {
+                                        delayCounter++;
+                                        return `
+                                        <div class="factor-card" style="animation-delay: ${delayCounter * 0.05}s">
+                                            <div class="card-inner">
+                                                <div class="factor-name">${item.name}</div>
+                                                <div class="factor-right-group">
+                                                    <div style="display:flex; align-items:baseline;">
+                                                        <span class="value-indicator">AP</span>
+                                                        <div class="factor-value">${item.value}</div>
+                                                    </div>
+                                                    <div class="factor-formula">${item.formula || 'Level 1'}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `}).join('')}
                                 </div>
                             </div>
                         `;
@@ -384,7 +422,22 @@
                     sectionTotal = calculateItems(section.items, section.method);
                     contentHTML = `
                         <div class="card-list">
-                            ${section.items.map(item => createCard(item)).join('')}
+                            ${section.items.map(item => {
+                                delayCounter++;
+                                return `
+                                <div class="factor-card" style="animation-delay: ${delayCounter * 0.05}s">
+                                    <div class="card-inner">
+                                        <div class="factor-name">${item.name}</div>
+                                        <div class="factor-right-group">
+                                            <div style="display:flex; align-items:baseline;">
+                                                <span class="value-indicator">FC</span>
+                                                <div class="factor-value">${item.value}</div>
+                                            </div>
+                                            <div class="factor-formula">${item.formula || 'Level 1'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `}).join('')}
                         </div>
                     `;
                 }
@@ -393,10 +446,11 @@
 
                 const sectionHTML = `
                     <div class="section">
-                        <div class="section-header">
-                            <span class="section-title">${section.title}</span>
-                            <div class="section-tag">TOTAL</div>
-                            <span class="section-total" style="margin-left:10px;">${sectionTotal.toFixed(2)}</span>
+                        <div class="section-header-bar">
+                            <div class="header-content">
+                                <span class="section-title">${section.title}</span>
+                                <span class="section-total">${fmt(sectionTotal)}</span>
+                            </div>
                         </div>
                         ${contentHTML}
                     </div>
@@ -404,6 +458,7 @@
                 container.innerHTML += sectionHTML;
             }
 
+            // 总分显示优化，如果很大则显示整数
             document.getElementById('grand-total').innerText = grandTotal.toFixed(2);
         }
 
